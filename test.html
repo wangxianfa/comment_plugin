@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./lib/jquery-2.2.4.js"></script>
+    <script>
+      $(function(){
+        $("#btn").on('click', function(){
+          $.ajax({
+            type: "get",
+            url: "http://localhost:3000/getcomments?site=http://www.baidu.com&originId=12",
+            success: function (response) {
+              console.log(response)
+            }
+          });
+        })
+      })
+    </script>
+  </head>
+  <body>
+    <div id="main">
+      <button id="btn">获取评论</button>
+    </div>
+    <script id="echochamber">
+      var EchoChamber = window.EchoChamber || {};
+      (function() {
+        EchoChamber.discussionURL = window.location;
+        var script = document.createElement('script');
+        script.src = './main.js';
+        script.async = true;
+        var entry = document.getElementsByTagName('script')[0];
+        entry.parentNode.insertBefore(script, entry);
+      })();
+    </script>
+  </body>
+</html>
