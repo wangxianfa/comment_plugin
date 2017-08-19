@@ -1,49 +1,80 @@
-# Echochamber.js
+# TridentCommnent
 
-## All off the commenting, none of the comments.
+> 这是一个提供评论服务的插件
 
-_alpha af_
+## 项目结构
 
-Echochamber.js is a third-party script you can install to add a simple comment
-form to your blog post or website.
+- `config/` 配置文件
+- `dist/` 打包文件
+- `src/` 源代码
+- `src/client/` 前端插件代码
+- `src/server/` Node服务端代码
+- `static/` 静态文件
+-  `gulpfile.js` 插件的入口文件
 
-_why not just use disqus?_
+## 使用
+>要求:   
+>  `Node`: [node](https://nodejs.org/)   
+>  `MongoDB`: [MongoDB](https://www.mongodb.org/)
 
-Because then there'd be a chance that someone would read the comments. _You_
-might have to read those comments. You don't want that.
+### 1.引入
 
-When a user submits a comment, echochamber.js will save the comment to the user's
-LocalStorage, so when they return to the page, they can be confident that their
-voice is being heard, and feel _engaged_ with your very engaging content. It does
-not make any HTTP requests. Since LocalStorage is only local, you and your database
-need not be burdened with other people's opinions.
+复制下面代码到你想使用评论的地方:
 
-## Features
-
-- No server required!
-- 100% spam-proof!
-- Compatible with most blog and static site software
-- Styles itself nicely to match your site's colours and fonts
-
-## Installation
-
-Copy and paste the following code where you want your comments to appear:
+**你需要在每篇文章页面更新`window.triComment`对象!!**
 
 ```html
+   <script>
+    window.triComment = {
+      domain: '', // 反向代理地址
+      username: '', // 当前登录用户名
+      avatar: '', // 用户头像
+      originId: '', // 当前文章id
+      site: '' // 当前网站标识
+    }
+  </script>
   <script id="echochamber">
     var EchoChamber = window.EchoChamber || {};
     (function() {
-      EchoChamber.discussionURL = window.location;
-      var script = document.createElement('script');
-      script.src = 'https://s3.amazonaws.com/echochamberjs/dist/main.js';
-      script.async = true;
-      var entry = document.getElementsByTagName('script')[0];
-      entry.parentNode.insertBefore(script, entry);
+        EchoChamber.discussionURL = window.location;
+        var script = document.createElement('script');
+        script.src = window.triComment.domain + '/main.js';
+        script.async = true;
+        var entry = document.getElementById('echochamber');
+        entry.parentNode.insertBefore(script, entry);
     })();
   </script>
 
 ```
 
-## Screenshot
+### 2.运行服务
 
-![screenshot](https://s3.amazonaws.com/f.cl.ly/items/1C2d1h3E2D07432A1W2Q/Screen%20Shot%202015-07-14%20at%206.19.28%20PM.png)
+**启动mongodb**
+
+* `npm install`
+* `npm run build`
+* `npm run dev`
+
+## 配置
+
+**config/db.js**
+```
+module.exports = {
+    serverType: 'mongodb',
+    host: 'localhost', //配置数据库地址
+    port: '27017', //配置数据库端口
+    db: 'comments' //数据库名称
+}
+```
+**config/server.js**
+```
+module.exports = {
+    serverType: 'http', 
+    host: '10.122.4.96', //服务器地址
+    port: '3000' //服务器端口
+}
+```
+
+
+
+
