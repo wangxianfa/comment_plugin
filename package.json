@@ -4,8 +4,10 @@
   "description": "",
   "main": "bundle.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./app.js"
+    "test": "node ./models/comment.js",
+    "start": "gulp browserify && pm2 start ./src/server/app.js --name 'comment-plugin'",
+    "build": "gulp browserify",
+    "dev": "nodemon --watch src/server --watch config --watch gulpfile.js ./src/server/app.js"
   },
   "repository": {
     "type": "git",
@@ -18,14 +20,26 @@
   },
   "homepage": "https://github.com/tessalt/echo-chamber-js",
   "dependencies": {
-    "css-loader": "^0.10.1",
-    "extract-text-webpack-plugin": "^0.5.0",
+    "axios": "^0.16.2",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.2.1",
     "js-md5": "^0.3.0",
-    "style-loader": "^0.10.2",
+    "mongoose": "^4.11.5",
+    "pm2": "^2.6.1",
     "webpack": "^1.8.7"
   },
   "devDependencies": {
-    "express": "^4.15.3",
-    "mongoose": "^4.11.5"
+    "browserify": "^14.4.0",
+    "css-loader": "^0.10.1",
+    "extract-text-webpack-plugin": "^0.5.0",
+    "gulp": "^3.9.1",
+    "nodemon": "^1.11.0",
+    "shelljs": "^0.7.8",
+    "style-loader": "^0.10.2",
+    "uglify": "^0.1.5",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.9.0"
   }
 }

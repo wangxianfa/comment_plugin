@@ -11,4 +11,7 @@
 
 - src/ 代码目录
 
+- static/ 静态文件目录
+  - images/ 图片资源
+
 - app.js  后端入口文件
