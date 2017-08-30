@@ -5,29 +5,37 @@ const db = require('./db.js'),
       mongoose = require('mongoose'),
       Schema = mongoose.Schema;
 
-const CommentSchema = new Schema({          
+const CommentSchema = new Schema({
+  userid: {
+    type: String
+  },
   username : {
-    type : String,
-    required : true  
-  },                   
+    type : String
+  },
   avatar : {
-    type : String,
-    default : './images/dn.jpg'
-  },    
-  content : { 
-    type : String,
-    required : String
-   },                   
+    type : String
+  },
+  content : {
+    type : String
+  },
   originId : {
-    type : String,
-    required : String
+    type : String
   },
   site : {
     type : String
   },
   timestamp : {
     type : Number
-  }                   
+  },
+  total : {
+    type : Number
+  },
+  like : {
+    type : Number
+  },
+  _cite : {
+    type : String
+  }
 });
 
 /**
@@ -45,6 +53,15 @@ CommentSchema.statics.findByCondition = function (originId, site, page, callback
     'site' : site
   }
   return CommentModel.find(condition).skip( (page - 1) * 10).limit(10).sort({'timestamp' : -1}).exec(callback);
+}
+
+CommentSchema.statics.findById = function (cite, callback) {
+  console.log(cite)
+  var condition = {
+    '_id': cite
+  }
+
+  return CommentModel.find(condition).exec(callback);
 }
 
 /**
@@ -73,15 +90,17 @@ CommentSchema.statics.findByCondition_Nopage = function (originId, site, callbac
  * site : String
  * timestamp : Number (自动生成)
  */
-CommentSchema.statics.insertComment = function (username, avatar, content, originId, site, callback) {
+CommentSchema.statics.insertComment = function (userid, username, avatar, content, originId, site, cite, callback) {
   const timestamp = Date.parse(new Date());
   var allInfo = {
+    'userid' : userid,
     'username' : username,
     'avatar' : avatar,
     'content' : content,
     'originId' : originId,
     'site' : site,
-    'timestamp' : timestamp
+    'timestamp' : timestamp,
+    '_cite' : cite
   }
 
   // console.log(allInfo)
@@ -108,7 +127,7 @@ CommentSchema.statics.commentsCount =  function () {
  */
 CommentSchema.statics.deleteComment =  function (_id, callback) {
   // console.log(1);
-  return CommentModel.update ({'_id': _id}, {'content': ''}, callback);
+  return CommentModel.update ({'_id': _id}, {'content': '', 'avatar': '/static/images/demo.png'}, callback);
 }
 
 var CommentModel = mongoose.model('CommentModel', CommentSchema);

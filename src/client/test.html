@@ -3,19 +3,21 @@
   <head>
     <title></title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport"  content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1" user-scalable=no>
   </head>
   <body>
-   <script defer>
-    window.triComment = {
+  <script id=echochamber src='/main.js'></script>
+  <script>
+    const triComment = {
       domain: '',
-      username: '小王',
+      userid: 'xiaodongni', // 评论者自己
+      username: '小小法',
       avatar: '/static/images/dn.jpg',
       originId: 'waa',
-      site: 'www.baidu.commm'
+      site: 'www.baidu.commm',
+      isAuthor: true // 文章作者
     }
+    var tri01 = new $.triComment(triComment);
   </script>
-  <script id="echochamber" src="/main.js"></script>
-
-  </body>
+</body>
 </html>

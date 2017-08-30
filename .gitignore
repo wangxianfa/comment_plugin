@@ -3,10 +3,12 @@
 *.db
 dist
 node_modules/
-.vscode/
+config/
+
+dist
 
 *.DS_Store
 log/
-npm-debug.*
+npm-debug.log
 public/js/core/models.js
 public/js/core/helpers.js

@@ -1,4 +1,6 @@
 module.exports = {
+
     adapter: 'mongodb',
-    uri: '127.0.0.1:27017/mycomments'
+    uri: '10.226.208.51:27017/mycomments'
+
 }
