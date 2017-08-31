@@ -3,10 +3,45 @@
   <head>
     <title></title>
     <meta charset="UTF-8">
-    <meta name="viewport"  content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1" user-scalable=no>
+    <meta name="viewport"  content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0, user-scalable=no">
+    <style>
+      #main{
+        height: 500px;
+        overflow: scroll;
+        background-color: #ff0;
+      }
+      #wrap{
+        width: 100%;
+        position: fixed;
+        top: 100px;
+        height: calc(100% - 100px);
+        left: 0px;
+        overflow-y: auto;
+        background-color: #f00;
+      }
+      .others{
+        height: 120px;
+        background-color: #00f;
+      }
+      .div1{
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
-  <script id=echochamber src='/main.js'></script>
+  <!-- <div id="main">111
+    <div id="wrap">
+      <div class="container">
+        <div class="div1">
+          <div class="others">2222</div>
+          <div class="comment"> -->
+            <div id=echochamber></div>
+          <!-- </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <script src='/main.js'></script>
   <script>
     const triComment = {
       domain: '',

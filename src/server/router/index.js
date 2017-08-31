@@ -11,6 +11,7 @@ exports.getComments = (req, res) => {
 
   // 目前采用不分页的方法进行展示
   commentModel.findByCondition(originId, site, page, (err, result) => {
+    var resultData = [];
 
     // 查询出错，返回错误代码-1
     if (err) {
@@ -18,9 +19,40 @@ exports.getComments = (req, res) => {
       return;
       // db.close()
     }
-    // 查询成功，返回结果
-    res.send(result);
-    return;
+
+    // commentModel.findById()
+    var len = result.length;
+    (function iterator (i) {
+      if (i === len) {
+        // 查询成功，返回结果
+        res.send(resultData);
+        return;
+
+      } else {
+
+        const _result = result[i];
+        if (result[i]._cite !== '') {
+
+          // 查找回复对象数据
+          commentModel.findById(result[i]._cite, (err, replydata) => {
+            if (err) {
+              res.send('-1');
+              return;
+            }
+
+            resultData.push(Object.assign({}, JSON.parse(JSON.stringify(_result)), {'reply': replydata[0]}))
+            iterator(i+1)
+          })
+
+        } else {
+
+          resultData.push(Object.assign({}, JSON.parse(JSON.stringify(_result)), {'reply': {}}))
+          iterator(i+1)
+        }
+      }
+
+    })(0)
+
     // db.close()
 
   })

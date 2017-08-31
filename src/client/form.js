@@ -143,7 +143,7 @@ var Form = {
 
     this.author.init(this.triComment.userid, this.triComment.username, this.triComment.avatar);
     // console.log(this.triComment) // 正常
-    comment.init(this.author, this.DOM.ECFormField.value, new Date().toString(), '', this.triComment.site, this.triComment.originId, '', this.triComment);
+    comment.init(this.author, this.DOM.ECFormField.value, new Date().toString(), '', this.triComment.site, this.triComment.originId, '', {}, this.triComment);
     // if (comment.validate(this.getCommentLength(this.clearTag((this.DOM.ECFormField.value).toString())),this.DOM.ECFormField.value,window.triComment.commentable)) {
     if (comment.validate(this.getCommentLength(this.clearTag((this.DOM.ECFormField.value).toString())), this.DOM.ECFormField.value)) {
       this.upload2DB(comment);
@@ -184,6 +184,7 @@ var Form = {
       return false;
     })
   },
+
   getCommentLength(ihtml) {
     var len = ihtml.length;
     return len;

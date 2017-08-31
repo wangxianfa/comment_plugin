@@ -50,13 +50,14 @@ CommentSchema.statics.findByCondition = function (originId, site, page, callback
   // console.log(1)
   var condition = {
     'originId' : originId,
-    'site' : site
+    'site' : site,
+    'content':{'$ne': ""}
   }
   return CommentModel.find(condition).skip( (page - 1) * 10).limit(10).sort({'timestamp' : -1}).exec(callback);
 }
 
 CommentSchema.statics.findById = function (cite, callback) {
-  console.log(cite)
+
   var condition = {
     '_id': cite
   }

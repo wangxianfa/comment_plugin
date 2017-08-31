@@ -4,7 +4,7 @@ var Emoji = require('./create_emoji.js');
 
 var Comment = {
 
-  init: function(author, text, timestamp, id, site, originId, cite, triComment) {
+  init: function(author, text, timestamp, id, site, originId, cite, reply, triComment) {
     this.text = text;
     this.author = author;
     this.timestamp = timestamp;
@@ -13,8 +13,11 @@ var Comment = {
     this.errors = [];
     this.id = id;
     this.cite = cite;
-    this.replyHtml = '';
+    this.reply = reply;
     this.triComment = triComment;
+
+    console.log(this.reply)
+    // console.log(JSON.stringify(this.reply).length === 2)
     // this.renderReply();
   },
 
@@ -37,6 +40,11 @@ var Comment = {
 
 
   transformEmoji: function(str) {
+
+      if (!str) {
+        str = '';
+      }
+
       // console.log(this.triComment)
       var e = Object.create(Emoji);
       e.init(-2, this.triComment);
@@ -53,7 +61,7 @@ var Comment = {
           for (var i = 0; i < e.DOM.emoji.length; i++ ) {
             for (var x = 0; x < e.DOM.emoji[i].length; x++) {
               if (temp === e.DOM.emoji[i][x].emojiName) {
-                var rep = '<span style="display: inline-block; height: 25px; box-sizing: border-box;"><img style="width: 22px; height: 22px; margin: 0 1px;" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
+                var rep = '<span style="display: inline-block; height: 22px; box-sizing: border-box;"><img style="width: 22px; height: 22px; margin: 0 1px;" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
                 // console.log('rep: ' + rep);
                 str = str.replace(condition[j],rep);
                 // console.log('replace:' + elecontent);
@@ -67,31 +75,20 @@ var Comment = {
       return str;
   },
 
-  renderReply: function() {
-    var self = this
-    if (this.cite) {
-      axios({
-        method: 'GET',
-        url: this.triComment.domain + '/getreply?cite=' + this.cite,
-      }).then(function (res) {
-        // self.commentsList.comments.unshift(comment);
-        // console.log(res.data.length)
-        if (res.data.length > 0) {
-          self.replyHtml = "<div id='replyCont'>"+ res.data[0].username + ": " + res.data[0].content +"</div>";
-        }
-
-        // console.log(self.replyHtml);
-
-      }).catch(function (res) {
-        console.log(res)
-      })
-    }
-
-  },
-
   render: function() {
+    var reply_display;
     if (this.text === null || this.text === '') {
       this.text = '该评论已删除';
+    }
+
+    if (this.reply.content === null || this.reply.content === '') {
+      this.reply.content = '该评论已删除';
+    }
+
+    if (JSON.stringify(this.reply).length === 2) {
+      reply_display = 'none';
+    } else {
+      reply_display = '-webkit-box'
     }
 
     return (
@@ -103,10 +100,11 @@ var Comment = {
           "<h4 style='margin: 0; height: 20px; line-height: 20px; font-weight: bold; font-size: 12px'><em>" + this.author.name  +
             "</em><small>" + _renderDate(this.timestamp) + "</small>" +
             "<span><i class='delete fa fa-trash-o fa-lg' aria-hidden='true' data-id='" + this.id + "' data-toggle='modal' data-target='#deleteComModal' " +  "></i>" +
-            // "<i class='replay fa fa-commenting-o' aria-hidden='true' data-id='"+ this.id +"'></i>" + 
+            "<i class='replay fa fa-commenting-o' aria-hidden='true' data-id='"+ this.id +"'></i>" +
             "</span>" +
           "</h4>" +
-          "<div style='margin: 0; line-height: 25px; padding: 6px 0' class='ec-content'>" + this.transformEmoji(this.text) + "</div>" + this.replyHtml +
+          "<div style='margin: 0; line-height: 25px; padding: 6px 0' class='ec-content'>" + this.transformEmoji(this.text) + "</div>" +
+          "<div style='display: "+ reply_display +"; margin-bottom: 10px; min-height: 32px;' id='replyCont'>"+ this.reply.username + ": " + this.transformEmoji(this.reply.content) +"</div>" +
         "</div>" +
       "</div>"
     );
