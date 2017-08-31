@@ -12,6 +12,7 @@ var CommentList = {
     this.DOM = {};
     this.triComment = triComment;
     this.mouseindex = 0;
+    this.err = [];
 
     var list;
     if (!iframe.contentWindow.document.getElementById('EC-list')) {
@@ -76,18 +77,12 @@ var CommentList = {
 
     ECList.addEventListener('click', function (e) {
       var item = e.target;
-      // console.log(item.tagName)
+
       // 删除
       if (item.tagName === 'I' && item.getAttribute('class').indexOf('delete') !== -1) {
         var modal = window.top.document.querySelector('#deleteComModal');
         $(modal).modal('show');
         $(modal.getElementsByTagName('button')[1]).off('click').on('click', function () {
-          item.parentNode.parentNode.parentNode.previousSibling.firstChild.src = self.triComment.domain + '/static/images/demo.png';
-          item.parentNode.parentNode.nextSibling.innerText = '该评论已删除';
-          item.parentNode.parentNode.nextSibling.style.fontSize = "14px";
-          item.parentNode.parentNode.nextSibling.style.color = "#c5c5c5";
-          // console.log(item.parentNode.parentNode)
-          item.parentNode.parentNode.style.display = "none";
           self.deleteComment(item.getAttribute('data-id'));
           self.resizeForm();
         })
@@ -98,12 +93,11 @@ var CommentList = {
       if (item.tagName === 'I' && item.getAttribute('class').indexOf('replay') !== -1) {
 
         // 移除其他
-        if ($(item.parentNode.parentNode.parentNode.lastChild).attr('id') !== 'reply' && self.iframe.contentWindow.document.getElementById('reply')) {
+        if (self.iframe.contentWindow.document.getElementById('reply')  &&  $(item.parentNode.parentNode.parentNode.lastChild).attr('id') !== 'reply') {
          $(self.iframe.contentWindow.document.getElementById('reply')).remove();
          self.emoji = '';
         }
 
-        // 加在当下
         // console.log($(item.parentNode.parentNode.parentNode.lastChild).attr('id'))
         if ($(item.parentNode.parentNode.parentNode.lastChild).attr('id') !== 'reply') {
           var reply = Object.create(Reply)
@@ -117,32 +111,10 @@ var CommentList = {
           self.DOM.replyTextarea = self.doc.getElementById('replyTextarea');
           self.DOM.replyTextarea.addEventListener('mouseup', self.onTextareaMouseup.bind(self));
           self.DOM.replyTextarea.addEventListener('keyup', self.onTextareaKeyup.bind(self));
+          self.DOM.replyTextarea.addEventListener('focus', self.onTextareaFocus.bind(self));
 
-          self.DOM.dragBugle = self.doc.getElementById('dragBugle');
-          // 给文本框增加resize事件
-          self.DOM.dragBugle.onmousedown = function (event) {
-            var event = event || window.event;
-            var _pageY = event.pageY || event.clientY + document.documentElement.scrollTop;
-
-            $(self.doc).on('mousemove', function (event){
-              var event = event || window.event;
-              var pageY = event.pageY || event.clientY + self.doc.documentElement.scrollTop;
-              var disY = pageY - _pageY;
-              // 改变——pageY
-              _pageY = pageY;
-              var height = parseInt(self.DOM.replyTextarea.style.height) + disY;
-              if (height < 32) {
-                height = 32;
-              }
-              self.DOM.replyTextarea.style.height = height + 'px';
-              self.resizeForm();
-            })
-
-            $(self.doc).on('mouseup',function () {
-              $(self.doc).off('mousemove');
-              $(self.doc).off('mouseup');
-            })
-          }
+          // 给文本框增加自动resize事件
+          $(self.DOM.replyTextarea).on('input', self.autoResizeHeight.bind(self))
         }
 
         self.resizeForm()
@@ -206,6 +178,7 @@ var CommentList = {
     }).then((response) => {
 
       // console.log(response)
+      this.loadDataFromDB(this.triComment.site, this.triComment.originId, false);
 
     })
   },
@@ -311,7 +284,7 @@ var CommentList = {
       a.init(ele.userid, ele.username, ele.avatar);
       var c = Object.create(Comment);
       // console.log(self.triComment) //正常
-      c.init(a, ele.content, ele.timestamp, ele._id, self.triComment.site, self.triComment.originId, ele._cite, self.triComment);
+      c.init(a, ele.content, ele.timestamp, ele._id, self.triComment.site, self.triComment.originId, ele._cite, ele.reply, self.triComment);
       return c;
     });
   },
@@ -340,6 +313,7 @@ var CommentList = {
     // console.log($(this.iframe.contentWindow.document.getElementById("EC-list")).find('.ec-content'))
     // querySelectorAll在ie下会返回一个NodeList，不能使用forEach遍历, 通过jQuery解决兼容性问题
     var eclist = $(self.iframe.contentWindow.document.getElementById("EC-list")).find('.ec-content');
+
     for (var i = 0; i < eclist.length; i++) {
 
       if (eclist[i].innerText === '该评论已删除') {
@@ -423,9 +397,14 @@ var CommentList = {
     var author = Object.create(Author);
     author.init(this.triComment.userid, this.triComment.username, this.triComment.avatar);
     // console.log(this.triComment) // 正常
-    comment.init(author, this.DOM.replyTextarea.value, new Date().toString(), '', this.triComment.site, this.triComment.originId, id, this.triComment);
+    comment.init(author, this.DOM.replyTextarea.value, new Date().toString(), '', this.triComment.site, this.triComment.originId, id, {}, this.triComment);
 
-    this.upload2DB(comment);
+    if (comment.validate(this.getCommentLength(this.clearTag((this.DOM.replyTextarea.value).toString())), this.DOM.replyTextarea.value)) {
+      this.upload2DB(comment);
+    } else {
+      this.showErrors(comment.errors);
+    }
+    this.resizeForm();
 
   },
 
@@ -537,6 +516,46 @@ var CommentList = {
       // self.showErrors(error);
       return false;
     })
+  },
+  // 错误信息显示
+  showErrors: function (errors) {
+    this.err.push(errors[0]);
+    if (this.err.length === 1) {
+      var msg = this.doc.createElement('div');
+      var err = '<p>' + errors[0].message + '</p>';
+      msg.innerHTML = err;
+      msg.classList.add('ec-error');
+      var Reply = this.doc.getElementById('reply');
+      Reply.appendChild(msg);
+    }
+  },
+
+  getCommentLength(ihtml) {
+    var len = ihtml.length;
+    return len;
+  },
+
+  // 去除html标签
+  clearTag: function (str) {
+    return str.replace(/<(?:.|\s)*?>/g, "").replace(/\s/g, "").replace(/[&nbsp;]/g, "");
+  },
+
+  autoResizeHeight: function () {
+    console.log(this.DOM.replyTextarea.style.height)
+    console.log(this.DOM.replyTextarea.style.lineHeight)
+    console.log($(this.DOM.replyTextarea).width())
+    console.log(this.DOM.replyTextarea.scrollHeight)
+    console.log('iiiii')
+    // if ((this.DOM.replyTextarea.scrollHeight + 2) !== parseInt(this.DOM.replyTextarea.style.height)) {
+    this.DOM.replyTextarea.style.height = (this.DOM.replyTextarea.scrollHeight + 2) + 'px';
+    // }
+  },
+
+  onTextareaFocus: function () {
+    if ($(this.DOM.replyTextarea.parentNode.parentNode.lastChild).attr('class') === 'ec-error') {
+      $(this.DOM.replyTextarea.parentNode.parentNode.lastChild).remove();
+      this.err = [];
+    }
   }
 
 }

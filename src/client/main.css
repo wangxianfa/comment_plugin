@@ -25,6 +25,12 @@ ul, li{
   list-style: none;
 }
 
+@media screen and (min-width:320px) and (max-width:1024px){
+  textarea:focus {
+    font-size: 14px !important;
+  }
+}
+
 .ec-form-wrapper {
   background: white;
 }
@@ -353,7 +359,7 @@ small {
 
 #emoji {
   position: absolute;
-  top: 2px;
+  top: 4px;
 }
 
 #blank {
@@ -411,14 +417,16 @@ i {
 #replyTextarea{
   border: 1px solid #e0e0e0;
   width: 100%;
-  height: 32px;
+  /* height: 100%; */
   font-size: 14px;
   color: #2a2a2a;
-  resize: vertical;
-  /* resize: none; */
+  /* resize: vertical; */
+  resize: none;
   padding: 5px 9px;
   box-sizing: border-box;
   border-radius: 3px;
+  overflow-x: hidden;
+  line-height: 20px;
 }
 
 #replyTextarea:focus{
@@ -427,14 +435,30 @@ i {
 
 #textareaWrap{
   position: relative;
+  min-height: 32px;
 }
-#textareaWrap>span{
+
+#reply>.ec-error{
+  color: #a2a2a2;
+  padding: 5px 0 0;
+}
+
+#replyCont{
+  font-family: 'Microsoft YaHei';
+  color: #a2a2a2;
+  background-color: #f6f6f6;
+  font-size: 14px;
+  padding: 3px 10px;
+  line-height: 26px;
+  overflow : hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+#replyCont>span{
+  /* margin-bottom: -4px; */
   display: inline-block;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 10px;
-  height: 10px;
-  background-color: transparent;
-  cursor: pointer;
+  /* height: 25px; */
 }
