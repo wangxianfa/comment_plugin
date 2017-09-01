@@ -83,7 +83,6 @@ ul, li{
 } */
 
 .ec-comment {
-  margin-bottom: 30px;
   display: flex;
   border-bottom: 1px solid #f1f1f1;
 }
@@ -448,13 +447,13 @@ i {
   color: #a2a2a2;
   background-color: #f6f6f6;
   font-size: 14px;
-  padding: 3px 10px;
-  line-height: 26px;
-  overflow : hidden;
+  padding: 4px 10px 3px;
+  line-height: 25px;
+  /* overflow : hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical; */
 }
 
 #replyCont>span{

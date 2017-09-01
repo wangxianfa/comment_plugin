@@ -4,6 +4,7 @@ var axios = require('axios')
 var Emoji = require('./create_emoji.js');
 var Reply = require('./reply.js')
 const config = require('../../config/server.js')
+const commonFunc = require('./commonFunc.js')
 
 
 var CommentList = {
@@ -68,7 +69,7 @@ var CommentList = {
 
 
   },
-
+  // 事件监听
   addEventListener: function () {
     var self = this;
     $(this.loadmore).on('click', this.loadMore.bind(this));
@@ -93,7 +94,7 @@ var CommentList = {
       if (item.tagName === 'I' && item.getAttribute('class').indexOf('replay') !== -1) {
 
         // 移除其他
-        if (self.iframe.contentWindow.document.getElementById('reply')  &&  $(item.parentNode.parentNode.parentNode.lastChild).attr('id') !== 'reply') {
+        if (self.iframe.contentWindow.document.getElementById('reply')) {
          $(self.iframe.contentWindow.document.getElementById('reply')).remove();
          self.emoji = '';
         }
@@ -127,6 +128,7 @@ var CommentList = {
 
   },
 
+  // 加载评论
   loadDataFromDB: function (site, originId, load) {
     var self = this;
 
@@ -219,8 +221,7 @@ var CommentList = {
   //获取数据后,重置form大小
   resizeForm: function () {
     var formHeight = $(this.form).height();
-    // console.log(this.form)
-    // console.log("comment_list中的form的Height:" + formHeight)
+    console.log("comment_list中的form的Height:" + formHeight)
     var margin = parseInt(window.getComputedStyle(this.form).marginBottom);
     // console.log('comment_list中的form的margin: ' + margin);
     var num = 0; // 加上body的padding值40
@@ -229,17 +230,14 @@ var CommentList = {
 
     for (var index = 0; index < eccomment.length; index++) {
 
-      num += (parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).height() + parseInt($(this.list).find('.ec-comment').eq(index).css('padding-bottom')) + 1)
-      // console.log((parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).height() + parseInt($(this.list).find('.ec-comment').eq(index).css('padding-bottom')) + 1))
-      // console.log('padding: ' + parseInt($(this.list).find('.ec-comment').eq(index).css('padding-bottom')))
+      num += (parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1)
+      // console.log((parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1))
       // console.log('margin: ' + parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')))
-      // console.log('height: ' + $(this.list).find('.ec-comment').eq(index).height())
-
+      console.log('height: ' + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
     }
 
     num += 30;
-    // console.log(num)
-    // console.log('comment_list中的ECList的height: ' + num);
+    console.log('comment_list中的ECList的height: ' + num);
 
     // var height = 0;
     // console.log($(this.form.nextSibling.nextSibling))
@@ -302,15 +300,12 @@ var CommentList = {
     this.list.innerHTML = this.buildHTML();
     var i = this.iframe.contentWindow.document.getElementById("EC-list").querySelectorAll('i');
 
-    // 游浏览器兼容性问题
-    // console.log(navigator.userAgent.match('/mobile/i'))
     if (navigator.userAgent.match('/mobile/i')) {
       i.forEach(function (i) {
         i.style.display = 'block';
       })
     }
 
-    // console.log($(this.iframe.contentWindow.document.getElementById("EC-list")).find('.ec-content'))
     // querySelectorAll在ie下会返回一个NodeList，不能使用forEach遍历, 通过jQuery解决兼容性问题
     var eclist = $(self.iframe.contentWindow.document.getElementById("EC-list")).find('.ec-content');
 
@@ -335,9 +330,6 @@ var CommentList = {
     }
 
     this.resizeForm();
-  },
-  getHeight: function () {
-    return this.list.clientHeight;
   },
   buildHTML: function () {
     var self = this;
@@ -390,8 +382,6 @@ var CommentList = {
 
   },
   replySubmit: function (id, e) {
-    console.log(this.DOM.replyTextarea.value)
-    console.log(id)
 
     var comment = Object.create(Comment);
     var author = Object.create(Author);
@@ -399,108 +389,45 @@ var CommentList = {
     // console.log(this.triComment) // 正常
     comment.init(author, this.DOM.replyTextarea.value, new Date().toString(), '', this.triComment.site, this.triComment.originId, id, {}, this.triComment);
 
-    if (comment.validate(this.getCommentLength(this.clearTag((this.DOM.replyTextarea.value).toString())), this.DOM.replyTextarea.value)) {
+    if (comment.validate(commonFunc.getCommentLength(this.DOM.replyTextarea.value.trim()), this.DOM.replyTextarea.value)) {
       this.upload2DB(comment);
     } else {
-      this.showErrors(comment.errors);
+      let msg = commonFunc.showErrors(this, comment.errors);
+      var Reply = this.doc.getElementById('reply');
+      if (msg) {
+        Reply.appendChild(msg);
+      }
     }
     this.resizeForm();
 
   },
 
   emojiIconClick: function (e) {
-    var self = this;
-    e.preventDefault();
-    /**
-     * bug: 表情只能添加在后面
-     */
-    //console.log('鼠标的位置：'+this.DOM.ECFormField.selectionStart);
-    var temp = e.target.outerHTML;
-    // console.log($(temp).attr('title'))
-    /**
-     * 输入框内的表情格式为[description]
-     */
-    var text = this.DOM.replyTextarea.value;
-    // console.log(this.DOM.ECFormField.innerHTML[this.mouseindex - 1]);
-    // console.log('前：' + text.slice(0, this.mouseindex));
-    // console.log('中：' + '[' + temp.firstChild.title + ']');
-    // console.log('后：' + text.slice(this.mouseindex));
-    this.DOM.replyTextarea.value = text.slice(0, this.mouseindex) + '[' + $(temp).attr('title') + ']' + text.slice(this.mouseindex);
 
-    // 隐藏表情框
-    this.DOM.emojiIcons.style.display = 'none';
-    // this.textLeft();
-    // console.log(this.mouseindex)
-    // console.log((temp.firstChild.title.length + 2))
-    this.mouseindex += ($(temp).attr('title').length + 2);
-    /**
-     * bug: 点击表情，光标不见了
-     */
-    // 显示光标
-    this.DOM.replyTextarea.focus();
-    if (window.getSelection) {
-      this.DOM.replyTextarea.selectionStart = this.DOM.replyTextarea.selectionEnd = this.mouseindex;
-    } else if (document.selection) {
-      var sel = this.DOM.replyTextarea.createTextRange();
-      sel.moveStart('character', this.mouseindex);
-      sel.moveEnd('character', this.mouseindex);
-      sel.collapse();
-    }
+    var element = this.DOM.replyTextarea;
+    commonFunc.emojiIconClick(this, element, e)
 
   },
 
   targetClick: function (e) {
-    e.preventDefault();
-    // console.log('dfdfdfdfdf:' + $(e.target).parent().index())
-    // addEventListener($(e.target).parent().index())
-    // 移除兄弟结点的class active
-    $(e.target).parent().siblings().removeClass('active');
-    // 添加当前节点class active
-    $(e.target).parent().addClass('active');
-
-    this.emoji = Object.create(Emoji);
-    // 移除之前节点
-    $(this.DOM.emojiIcons).find('.emojiList').remove();
-
-    // console.log(this.triComment) 正常
-
-    this.emoji.init($(e.target).parent().index(), this.triComment);
-    // 重新渲染表情框
-    this.DOM.emojiIcons.appendChild(this.emoji.DOM.emojiHtml);
-    // 重新添加监听事件
-    $(this.emoji.DOM.emojiHtml).find('.face').on('click', this.emojiIconClick.bind(this));
-
-    // console.log( $(this.DOM.emojiIcons).find('.emojiList') )
-
+    commonFunc.targetClick(this, true, e);
   },
 
   onTextareaKeyup: function (e) {
-    var self = this;
-    self.onTextareaMouseup();
+    this.onTextareaMouseup();
   },
 
-  // 光标位置获取不对
+  // 光标位置获取
   onTextareaMouseup: function (e) {
     if (window.getSelection) {
       this.mouseindex = this.DOM.replyTextarea.selectionStart;
     }
   },
 
+  // 评论
   upload2DB: function (comment) {
     var self = this;
-    axios({
-      method: 'POST',
-      url: self.triComment.domain + '/savecomment',
-      data: {
-        site: comment.site,
-        originId: comment.originId,
-        userid: comment.author.userid,
-        name: comment.author.name,
-        avater: comment.author.avatar,
-        commentbody: comment.text.replace(/</g, '&lt;').replace(/>/g, '&gt').replace(/\n/g, '<br/>'),
-        cite: comment.cite
-      }
-    }).then(function (res) {
+    commonFunc.saveComment(self, comment).then(function (res) {
       // self.commentsList.comments.unshift(comment);
       console.log(res)
 
@@ -517,37 +444,15 @@ var CommentList = {
       return false;
     })
   },
-  // 错误信息显示
-  showErrors: function (errors) {
-    this.err.push(errors[0]);
-    if (this.err.length === 1) {
-      var msg = this.doc.createElement('div');
-      var err = '<p>' + errors[0].message + '</p>';
-      msg.innerHTML = err;
-      msg.classList.add('ec-error');
-      var Reply = this.doc.getElementById('reply');
-      Reply.appendChild(msg);
-    }
-  },
-
-  getCommentLength(ihtml) {
-    var len = ihtml.length;
-    return len;
-  },
-
-  // 去除html标签
-  clearTag: function (str) {
-    return str.replace(/<(?:.|\s)*?>/g, "").replace(/\s/g, "").replace(/[&nbsp;]/g, "");
-  },
 
   autoResizeHeight: function () {
-    console.log(this.DOM.replyTextarea.style.height)
-    console.log(this.DOM.replyTextarea.style.lineHeight)
-    console.log($(this.DOM.replyTextarea).width())
-    console.log(this.DOM.replyTextarea.scrollHeight)
-    console.log('iiiii')
+    // console.log(this.DOM.replyTextarea.style.height)
+    // console.log(this.DOM.replyTextarea.style.lineHeight)
+    // console.log($(this.DOM.replyTextarea).width())
+    // this.DOM.replyTextarea.style.height = 'auto';
     // if ((this.DOM.replyTextarea.scrollHeight + 2) !== parseInt(this.DOM.replyTextarea.style.height)) {
     this.DOM.replyTextarea.style.height = (this.DOM.replyTextarea.scrollHeight + 2) + 'px';
+    // this.DOM.replyTextarea.style.height = this.DOM.replyTextarea.style.posHeight;
     // }
   },
 
