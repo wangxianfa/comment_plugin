@@ -3,6 +3,7 @@ var Comment = require('./comment.js');
 var Author = require('./author.js');
 var Emoji = require('./create_emoji.js');
 var axios = require('axios');
+const commonFunc = require('./commonFunc.js')
 
 const config = require('../../config/server.js');
 
@@ -145,30 +146,22 @@ var Form = {
     // console.log(this.triComment) // 正常
     comment.init(this.author, this.DOM.ECFormField.value, new Date().toString(), '', this.triComment.site, this.triComment.originId, '', {}, this.triComment);
     // if (comment.validate(this.getCommentLength(this.clearTag((this.DOM.ECFormField.value).toString())),this.DOM.ECFormField.value,window.triComment.commentable)) {
-    if (comment.validate(this.getCommentLength(this.clearTag((this.DOM.ECFormField.value).toString())), this.DOM.ECFormField.value)) {
+    if (comment.validate(this.getCommentLength(this.DOM.ECFormField.value.trim()), this.DOM.ECFormField.value)) {
       this.upload2DB(comment);
       this.DOM.WordLeft.innerText = 140;
     } else {
-      this.showErrors(comment.errors);
+      var msg = commonFunc.showErrors(this, comment.errors);
+      var Blank = this.doc.getElementById('blank');
+      if (msg) {
+        Blank.parentNode.insertBefore(msg, Blank);
+      }
     }
     this.resize();
   },
 
   upload2DB: function (comment) {
     var self = this;
-    axios({
-      method: 'POST',
-      url: self.triComment.domain + '/savecomment',
-      data: {
-        site: comment.site,
-        originId: comment.originId,
-        userid: comment.author.userid,
-        name: comment.author.name,
-        avater: comment.author.avatar,
-        commentbody: comment.text.replace(/</g, '&lt;').replace(/>/g, '&gt').replace(/\n/g, '<br/>'),
-        cite: comment.cite
-      }
-    }).then(function (res) {
+    commonFunc.saveComment(self, comment).then(function (res) {
       // self.commentsList.comments.unshift(comment);
       console.log(res)
       self.clear();
@@ -180,7 +173,12 @@ var Form = {
         field: 'text',
         message: '网络错误,评论失败~'
       }];
-      self.showErrors(error);
+      var msg = commonFunc.showErrors(self, error);
+      var Blank = self.doc.getElementById('blank');
+      if (msg) {
+        Blank.parentNode.insertBefore(msg, Blank);
+      }
+      self.resize();
       return false;
     })
   },
@@ -188,20 +186,6 @@ var Form = {
   getCommentLength(ihtml) {
     var len = ihtml.length;
     return len;
-  },
-  // 错误信息显示
-  showErrors: function (errors) {
-    this.err.push(errors[0]);
-    if (this.err.length === 1) {
-      var msg = this.doc.createElement('div');
-      var err = '<p>' + errors[0].message + '</p>';
-      msg.innerHTML = err;
-      msg.classList.add('ec-error');
-      var Blank = this.doc.getElementById('blank');
-      Blank.parentNode.insertBefore(msg, Blank);
-      this.resize();
-    }
-
   },
 
   onTextareaKeyup: function (e) {
@@ -250,7 +234,7 @@ var Form = {
   },
 
   textLeft: function () {
-    var len = this.getCommentLength(this.clearTag((this.DOM.ECFormField.value).toString()));
+    var len = this.getCommentLength(this.DOM.ECFormField.value.trim());
     var left = 140 - len;
     this.DOM.WordLeft.innerText = left;
   },
@@ -289,61 +273,14 @@ var Form = {
   },
 
   emojiIconClick: function (e) {
-    var self = this;
-    e.preventDefault();
-    /**
-     * bug: 表情只能添加在后面
-     */
-    var temp = e.target.outerHTML;
-    /**
-     * 输入框内的表情格式为[description]
-     */
-    var text = this.DOM.ECFormField.value;
-    this.DOM.ECFormField.value = text.slice(0, this.mouseindex) + '[' + $(temp).attr('title') + ']' + text.slice(this.mouseindex);
 
-    // 隐藏表情框
-    this.DOM.emojiIcons.style.display = 'none';
-    this.textLeft();
-    // console.log(this.mouseindex)
-    // console.log((temp.firstChild.title.length + 2))
-    this.mouseindex += ($(temp).attr('title').length + 2);
-    // 显示光标
-    this.DOM.ECFormField.focus();
-    if (window.getSelection) {
-      this.DOM.ECFormField.selectionStart = this.DOM.ECFormField.selectionEnd = this.mouseindex;
-    } else if (document.selection) {
-      var sel = this.DOM.ECFormField.createTextRange();
-      sel.moveStart('character', this.mouseindex);
-      sel.moveEnd('character', this.mouseindex);
-      sel.collapse();
-    }
+    var element = this.DOM.ECFormField;
+    commonFunc.emojiIconClick(this, element, e, true);
 
   },
 
   targetClick: function (e) {
-    e.preventDefault();
-    // 移除兄弟结点的class active
-    $(e.target).parent().siblings().removeClass('active');
-    // 添加当前节点class active
-    $(e.target).parent().addClass('active');
-
-    this.emoji = Object.create(Emoji);
-    // 移除之前节点
-    $(this.DOM.emojiIcons).find('.emojiList').remove();
-
-    // console.log(this.triComment) 正常
-
-    this.emoji.init($(e.target).parent().index(), this.triComment);
-    // 重新渲染表情框
-    this.DOM.emojiIcons.insertBefore(this.emoji.DOM.emojiHtml, this.DOM.emojiIcons.childNodes[this.DOM.emojiIcons.childNodes.length - 1]);
-    // 重新添加监听事件
-    $(this.emoji.DOM.emojiHtml).find('.face').on('click', this.emojiIconClick.bind(this));
-
-  },
-
-  // 去除html标签
-  clearTag: function (str) {
-    return str.replace(/<(?:.|\s)*?>/g, "").replace(/\s/g, "").replace(/[&nbsp;]/g, "");
+    commonFunc.targetClick(this, false, e);
   },
 
   renderFormTemplate: function () {
@@ -351,10 +288,10 @@ var Form = {
     "<div style='height: 154px' id='ECForm' class='ec-form-wrapper'>" +
       "<form class='ec-form'>" +
         "<div class='ec-form__field' id='ECForm-text'>" +
-          "<textarea contenteditable='true' class='' name='text' id='ECFormField' placeholder='我有话说...'>" +
+          "<textarea style='height: 98px;' contenteditable='true' class='' name='text' id='ECFormField' placeholder='我有话说...'>" +
           "</textarea>" +
-          "<div id='wordLeft'>还可以输入<span id='wordLeftNum'>140</span>字</div>" +
-          "<div id='ECFormButtonField'>" +
+          "<div id='wordLeft' style='height: 24px;'>还可以输入<span id='wordLeftNum'>140</span>字</div>" +
+          "<div style='height: 30px; box-sizing: border-box;' id='ECFormButtonField'>" +
             "<div id='emoji' class='emoji'>" +
               "<ul class='ec-emojiList'>" +
                 "<li><span id='ec-emoji-face' class='ec-emoji ec-emoji-face'>表情</span></li>" +

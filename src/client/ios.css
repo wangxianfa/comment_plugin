@@ -6,7 +6,9 @@
 	/* ref: https://www.w3cways.com/1988.html
 	 * 通过 z-index 解决 position + -webkit-overflow-scrolling 导致滚动区域卡住不能滑动
 	 */
-	  z-index: 1;
+		z-index: 1;
+		/* 解决包裹层和iframe之间有六百的问题 */
+		font-size: 0;
 }
 
 /* .demo-iframe-holder .overlay {

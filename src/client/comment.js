@@ -15,8 +15,6 @@ var Comment = {
     this.cite = cite;
     this.reply = reply;
     this.triComment = triComment;
-
-    console.log(this.reply)
     // console.log(JSON.stringify(this.reply).length === 2)
     // this.renderReply();
   },
@@ -61,7 +59,7 @@ var Comment = {
           for (var i = 0; i < e.DOM.emoji.length; i++ ) {
             for (var x = 0; x < e.DOM.emoji[i].length; x++) {
               if (temp === e.DOM.emoji[i][x].emojiName) {
-                var rep = '<span style="display: inline-block; height: 22px; box-sizing: border-box;"><img style="width: 22px; height: 22px; margin: 0 1px;" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
+                var rep = '<span style="display: inline-block; height: 25px; box-sizing: border-box;"><img style="width: 22px; height: 22px; margin: 0px 1px;" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
                 // console.log('rep: ' + rep);
                 str = str.replace(condition[j],rep);
                 // console.log('replace:' + elecontent);
@@ -88,11 +86,11 @@ var Comment = {
     if (JSON.stringify(this.reply).length === 2) {
       reply_display = 'none';
     } else {
-      reply_display = '-webkit-box'
+      reply_display = 'block'
     }
 
     return (
-      "<div style='margin-bottom: 15px; padding-bottom: 15px; display: flex; align-items: flex-start;' class='ec-comment'>" +
+      "<div style='margin-bottom: 15px; padding: 0px 0px 15px; display: flex; align-items: flex-start;' class='ec-comment'>" +
         "<div style='height:40px; width:40px;' class='ec-comment__avatar'>" +
           "<img  src='" + this.author.avatar + "'>" +
         "</div>" +
@@ -104,7 +102,7 @@ var Comment = {
             "</span>" +
           "</h4>" +
           "<div style='margin: 0; line-height: 25px; padding: 6px 0' class='ec-content'>" + this.transformEmoji(this.text) + "</div>" +
-          "<div style='display: "+ reply_display +"; margin-bottom: 10px; min-height: 32px;' id='replyCont'>"+ this.reply.username + ": " + this.transformEmoji(this.reply.content) +"</div>" +
+          "<div style='display: "+ reply_display +"; margin-bottom: 10px; line-height: 25px; padding: 4px 10px 3px;' id='replyCont'><span style='font-weight: bold; display: inline-block;'>"+ this.reply.username + "</span>: " + this.transformEmoji(this.reply.content) +"</div>" +
         "</div>" +
       "</div>"
     );
