@@ -90,7 +90,8 @@ var Comment = {
     }
 
     return (
-      "<div style='margin-bottom: 15px; padding: 0px 0px 15px; display: flex; align-items: flex-start;' class='ec-comment'>" +
+      // border、margin、padding等都必须写内联样式，不然会增加高度的不确定性
+      "<div style='margin-bottom: 15px; padding: 0px 0px 15px; display: flex; align-items: flex-start; border-bottom: 1px solid #f1f1f1;' class='ec-comment'>" +
         "<div style='height:40px; width:40px;' class='ec-comment__avatar'>" +
           "<img  src='" + this.author.avatar + "'>" +
         "</div>" +

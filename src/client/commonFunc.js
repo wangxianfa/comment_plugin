@@ -44,7 +44,6 @@ exports.saveComment = (_this, comment) => {
 }
 
 exports.targetClick = (_this, aoi, e) => {
-  console.log(aoi, e)
   e.preventDefault();
   // console.log('dfdfdfdfdf:' + $(e.target).parent().index())
   // addEventListener($(e.target).parent().index())
@@ -74,7 +73,7 @@ exports.targetClick = (_this, aoi, e) => {
 }
 
 exports.emojiIconClick = (_this, element,  e, leftword=false) => {
-  console.log('emojiclick')
+  // console.log('emojiclick')
   e.preventDefault();
 
   var temp = e.target.outerHTML;
@@ -110,5 +109,52 @@ exports.emojiIconClick = (_this, element,  e, leftword=false) => {
     sel.moveStart('character', _this.mouseindex);
     sel.moveEnd('character', _this.mouseindex);
     sel.collapse();
+  }
+}
+
+/**
+ * _this this指向
+ * bottomTarget 表情框底部表情分类条包裹层
+ * emojiIcons 表情框包裹层
+ * aoi 是通过appendChild方式还是通过insertBefore加入DOM，由于表情框布局方式不同引起
+ * e 点击事件
+ */
+exports.emojiClick = (_this, bottomTarget, emojiIcons, aoi, e) => {
+  e.preventDefault();
+
+  if (!_this.emoji) {
+    _this.emoji = Object.create(Emoji);
+    _this.emoji.init(0, _this.triComment);
+    // console.log(_this.emoji.DOM.emojiHtml)
+    if (aoi) {
+      emojiIcons.appendChild(_this.emoji.DOM.emojiHtml);
+    } else {
+      emojiIcons.insertBefore(_this.emoji.DOM.emojiHtml, _this.DOM.emojiIcons.childNodes[_this.DOM.emojiIcons.childNodes.length - 1]);
+    }
+
+  }
+  $(_this.emoji.DOM.emojiHtml).find('.face').off('click').on('click', _this.emojiIconClick.bind(_this));
+  $(bottomTarget).find('span>img').on('click', _this.targetClick.bind(_this));
+  // 点击其他隐藏
+  $(_this.doc.body).on('click', (e) => {
+
+    let condition;
+
+    if (aoi) {
+      condition = emojiIcons.style.display === 'block' && $(e.target).attr('id') !== 'ec-replay-emoji-face' && $(e.target).attr('class') !== 'emoji_target' && $(e.target).attr('class') !== 'face_wrap';
+    } else {
+      condition = emojiIcons.style.display === 'block' && $(e.target).attr('id') !== 'ec-emoji-face' && $(e.target).attr('class') !== 'emoji_target' && $(e.target).attr('class') !== 'face_wrap';
+    }
+
+    if (condition) {
+      emojiIcons.style.display = 'none';
+    }
+
+  });
+  // 展开表情框逻辑
+  if (emojiIcons.style.display === 'block') {
+    emojiIcons.style.display = 'none';
+  } else {
+    emojiIcons.style.display = 'block';
   }
 }

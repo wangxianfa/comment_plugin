@@ -249,25 +249,8 @@ var Form = {
   },
 
   emojiClick: function (e) {
-    e.preventDefault();
-    if (!this.emoji) {
-      this.emoji = Object.create(Emoji);
-      this.emoji.init(0, this.triComment);
-      this.DOM.emojiIcons.insertBefore(this.emoji.DOM.emojiHtml, this.DOM.emojiIcons.childNodes[this.DOM.emojiIcons.childNodes.length - 1]);
-    }
-    $(this.emoji.DOM.emojiHtml).find('.face').off('click').on('click', this.emojiIconClick.bind(this));
-    $(this.DOM.bottomTarget).find('span>img').on('click', this.targetClick.bind(this));
-    $(this.doc.body).on('click', (e) => {
-      if (this.DOM.emojiIcons.style.display === 'block' && $(e.target).attr('id') !== 'ec-emoji-face' && $(e.target).attr('class') !== 'emoji_target' && $(e.target).attr('class') !== 'face_wrap') {
-        this.DOM.emojiIcons.style.display = 'none';
-      }
-    });
-    // 展开表情框逻辑
-    if (this.DOM.emojiIcons.style.display === 'block') {
-      this.DOM.emojiIcons.style.display = 'none';
-    } else {
-      this.DOM.emojiIcons.style.display = 'block';
-    }
+
+    commonFunc.emojiClick(this, this.DOM.bottomTarget, this.DOM.emojiIcons, false, e);
     this.resize();
 
   },
@@ -291,7 +274,7 @@ var Form = {
           "<textarea style='height: 98px;' contenteditable='true' class='' name='text' id='ECFormField' placeholder='我有话说...'>" +
           "</textarea>" +
           "<div id='wordLeft' style='height: 24px;'>还可以输入<span id='wordLeftNum'>140</span>字</div>" +
-          "<div style='height: 30px; box-sizing: border-box;' id='ECFormButtonField'>" +
+          "<div style='height: 29px; box-sizing: border-box;' id='ECFormButtonField'>" +
             "<div id='emoji' class='emoji'>" +
               "<ul class='ec-emojiList'>" +
                 "<li><span id='ec-emoji-face' class='ec-emoji ec-emoji-face'>表情</span></li>" +

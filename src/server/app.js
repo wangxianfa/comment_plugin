@@ -25,7 +25,6 @@ app.get('/', (req, res) => {
   });
 });
 app.get('/getcomments', router.getComments) // 获取评论接口，可定制，但必须与router/index.js文件中的命名一致
-app.get('/getreply', router.getReply)
 
 const rawParser = bodyParser.json();
 
