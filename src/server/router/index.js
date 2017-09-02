@@ -15,7 +15,7 @@ exports.getComments = (req, res) => {
 
     // 查询出错，返回错误代码-1
     if (err) {
-      res.send('-1');
+      res.send({'code': 'E01', 'message': '数据查询出错！', 'content':''});
       return;
       // db.close()
     }
@@ -25,7 +25,7 @@ exports.getComments = (req, res) => {
     (function iterator (i) {
       if (i === len) {
         // 查询成功，返回结果
-        res.send(resultData);
+        res.send({'code': 'S01', 'message': '数据查询成功！', 'content':resultData});
         return;
 
       } else {
@@ -36,7 +36,7 @@ exports.getComments = (req, res) => {
           // 查找回复对象数据
           commentModel.findById(result[i]._cite, (err, replydata) => {
             if (err) {
-              res.send('-1');
+              res.send({'code': 'E01', 'message': '数据查询出错！', 'content':''});
               return;
             }
 
@@ -77,11 +77,11 @@ exports.saveComment = (req, res) => {
       commentModel.insertComment(userid, name, avater, commentbody, originId, site, cite, (err, result) => {
         // 出错，返回错误代码
         if (err) {
-          res.send('-1')
+          res.send({'code': 'E01', 'message': '评论出错！', 'content':''});
           return;
         }
         // 评论成功，返回成功代码 1
-        res.send('1')
+        res.send({'code': 'S01', 'message': '评论成功！', 'content':''});
         return;
       })
 
@@ -97,26 +97,12 @@ exports.deleteComment = (req, res) => {
   commentModel.deleteComment(id, (err, result) => {
     // console.log(id)
     if (err) {
-      res.send('-1')
+      res.send({'code': 'E01', 'message': '删除失败！', 'content':''});
       return;
     }
     // console.log(result)
-    res.send('1');
+    res.send({'code': 'S01', 'message': '删除成功！', 'content':''});
     return;
-  })
-
-}
-
-exports.getReply = (req, res) => {
-  const cite = req.query.cite;
-
-  commentModel.findById(cite, (err, result) => {
-    if (err) {
-      res.send('-1');
-      return;
-    }
-
-    res.send(result);
   })
 
 }

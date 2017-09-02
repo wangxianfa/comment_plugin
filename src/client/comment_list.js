@@ -145,12 +145,12 @@ var CommentList = {
         self.loadmore.style.display = 'block';
       }
 
-      if (res.data.length > 0 && load) {
-        self.comments = self.comments.concat(self.load(res.data));
+      if (res.data.content.length > 0 && load) {
+        self.comments = self.comments.concat(self.load(res.data.content));
       } else if (!load) {
-        self.comments = self.load(res.data);
+        self.comments = self.load(res.data.content);
       }
-      if (res.data.length < 10) {
+      if (res.data.content.length < 10) {
         self.haveMore = false;
         self.loadmore.innerHTML = '没有更多评论';
         self.loadmore.style.color = '#a2a2a2';
@@ -220,8 +220,8 @@ var CommentList = {
   },
   //获取数据后,重置form大小
   resizeForm: function () {
-    var formHeight = $(this.form).height();
-    console.log("comment_list中的form的Height:" + formHeight)
+    var formHeight = $(this.form).get(0).offsetHeight;
+    // console.log("comment_list中的form的Height:" + formHeight)
     var margin = parseInt(window.getComputedStyle(this.form).marginBottom);
     // console.log('comment_list中的form的margin: ' + margin);
     var num = 0; // 加上body的padding值40
@@ -233,11 +233,11 @@ var CommentList = {
       num += (parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1)
       // console.log((parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1))
       // console.log('margin: ' + parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')))
-      console.log('height: ' + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
+      // console.log('height: ' + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
     }
 
     num += 30;
-    console.log('comment_list中的ECList的height: ' + num);
+    // console.log('comment_list中的ECList的height: ' + num);
 
     // var height = 0;
     // console.log($(this.form.nextSibling.nextSibling))
@@ -263,7 +263,11 @@ var CommentList = {
 
     }
 
-    num += ($(this.loadmore).height() + parseInt($(this.loadmore).css('margin-top')))
+    if ($(this.loadmore).css('display') === 'block') {
+
+      num += ($(this.loadmore).height() + parseInt($(this.loadmore).css('margin-top')))
+
+    }
 
     // console.log('加载更多高度：' + ($(this.loadmore).height() + parseInt($(this.loadmore).css('margin-top'))))
 
@@ -350,35 +354,12 @@ var CommentList = {
 
   },
   emojiClick: function (e) {
-    // console.log(1)
-    e.preventDefault();
+
     this.DOM.bottomTarget = this.doc.getElementById('reply_bottom_target');
     this.DOM.emojiIcons = this.doc.getElementById('replyEmojiIcons');
-    if (!this.emoji) {
-      this.emoji = Object.create(Emoji);
-      this.emoji.init(0, this.triComment);
-      // console.log(this.emoji.DOM.emojiHtml)
-      this.DOM.emojiIcons.appendChild(this.emoji.DOM.emojiHtml);
-    }
-    $(this.emoji.DOM.emojiHtml).find('.face').off('click').on('click', this.emojiIconClick.bind(this));
-    $(this.DOM.bottomTarget).find('span>img').on('click', this.targetClick.bind(this));
-    // 点击其他隐藏
-    $(this.doc.body).on('click', (e) => {
-      if (this.DOM.emojiIcons.style.display === 'block' && $(e.target).attr('id') !== 'ec-replay-emoji-face' && $(e.target).attr('class') !== 'emoji_target' && $(e.target).attr('class') !== 'face_wrap') {
-        this.DOM.emojiIcons.style.display = 'none';
-      }
-    });
-    // 展开表情框逻辑
-    if (this.DOM.emojiIcons.style.display === 'block') {
-      this.DOM.emojiIcons.style.display = 'none';
-    } else {
-      this.DOM.emojiIcons.style.display = 'block';
-    }
-    this.resizeForm();
 
-    // 显示提交按钮
-    // var fields = this.DOM.form.querySelectorAll('.ec-form__fields');
-    // fields[0].style.display = 'block';
+    commonFunc.emojiClick(this, this.DOM.bottomTarget, this.DOM.emojiIcons, true, e);
+    this.resizeForm();
 
   },
   replySubmit: function (id, e) {
