@@ -1,5 +1,10 @@
 const axios = require('axios')
 var Emoji = require('./create_emoji')
+const Promise = require('promise-polyfill')
+
+if (!window.Promise) {
+  window.Promise = Promise;
+}
 
 exports.clearTag = (str) => {
   return str.replace(/<(?:.|\s)*?>/g, "").replace(/\s/g, "").replace(/[&nbsp;]/g, "");

@@ -137,7 +137,9 @@ var CommentList = {
       self.page = 1;
     }
 
-    axios.get(self.triComment.domain + '/getcomments?site=' + site + '&originId=' + originId + '&page=' + this.page).then(function (res) {
+    // 加一个timestamp是为了解决浏览器缓存问题
+    axios.get(self.triComment.domain + '/getcomments?site=' + site + '&originId=' + originId + '&page=' + this.page + '&timestamp=' + Date.parse(new Date()))
+    .then(function (res) {
 
       // 加载更多
       // 显示加在更多
@@ -150,6 +152,7 @@ var CommentList = {
       } else if (!load) {
         self.comments = self.load(res.data.content);
       }
+
       if (res.data.content.length < 10) {
         self.haveMore = false;
         self.loadmore.innerHTML = '没有更多评论';
@@ -165,7 +168,8 @@ var CommentList = {
       self.render();
       self.validate(self.comments);
 
-
+    }).catch(function(res) {
+      console.log(res)
     })
   },
   //删除评论
@@ -196,26 +200,21 @@ var CommentList = {
     // console.log(1111111)
     var isAuthor = this.triComment.isAuthor;
     var self = this;
-    this.iframe.contentWindow.document.querySelectorAll(".delete").forEach(function (ele, index) {
-      // console.log(window.triComment.userid)
-      // console.log(userid[index].author.userid)
-      var isCommentUser = self.triComment.userid === userid[index].author.userid ? true : false;
+    // forEach在IE下有兼容性问题
+    var del = $(self.iframe.contentWindow.document.getElementById("EC-list")).find('.delete');
+
+    for(var i = 0; i< del.length; i++) {
+      var isCommentUser = self.triComment.userid === userid[i].author.userid ? true : false;
       // console.log('isAuthor: ' + isAuthor)
       // console.log('isCommentUser: ' + isCommentUser)
       // var delete = ele.lastChild.
       if (!isAuthor && !isCommentUser) {
-        ele.style.display = 'none';
+        del[i].style.display = 'none';
       } else if (self.triComment.userid === '') {
-        ele.style.display = 'none';
+        del[i].style.display = 'none';
       }
-      var delContentDiv = ele.parentNode.parentNode.nextSibling;
-      if (delContentDiv.innerText === '该评论已删除') {
-        delContentDiv.parentNode.previousSibling.firstChild.src = self.triComment.domain + '/static/images/demo.png';
-        delContentDiv.style.fontSize = '14px';
-        delContentDiv.style.color = '#c5c5c5';
-        ele.parentNode.parentNode.style.display = 'none';
-      }
-    });
+    }
+
     this.resizeForm();
   },
   //获取数据后,重置form大小
@@ -276,7 +275,7 @@ var CommentList = {
     this.iframe.style.height = num + 10 + 'px';
     // this.overlay.style.height = num + 10 + 'px';
 
-    // console.log('iframe高度：' + this.iframe.style.height)
+    console.log('iframe高度：' + this.iframe.style.height)
 
   },
   load: function (data) {
@@ -302,12 +301,16 @@ var CommentList = {
       this.form.nextSibling.style.display = 'none';
     }
     this.list.innerHTML = this.buildHTML();
-    var i = this.iframe.contentWindow.document.getElementById("EC-list").querySelectorAll('i');
+    var i = $(self.iframe.contentWindow.document.getElementById("EC-list")).find('i');
+    // var i = this.iframe.contentWindow.document.getElementById("EC-list").querySelectorAll('i');
 
-    if (navigator.userAgent.match('/mobile/i')) {
-      i.forEach(function (i) {
-        i.style.display = 'block';
-      })
+
+    if (navigator.userAgent.toLowerCase().match(/mobile/i) == 'mobile') {
+      // alert(1)
+      for (var j = 0; j< i.length; j++) {
+        i[j].style.display = 'block';
+      }
+
     }
 
     // querySelectorAll在ie下会返回一个NodeList，不能使用forEach遍历, 通过jQuery解决兼容性问题

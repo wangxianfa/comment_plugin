@@ -91,14 +91,15 @@ var Comment = {
 
     return (
       // border、margin、padding等都必须写内联样式，不然会增加高度的不确定性
-      "<div style='margin-bottom: 15px; padding: 0px 0px 15px; display: flex; align-items: flex-start; border-bottom: 1px solid #f1f1f1;' class='ec-comment'>" +
-        "<div style='height:40px; width:40px;' class='ec-comment__avatar'>" +
+      // 不使用flex布局是为了提高兼容性
+      "<div style='margin-bottom: 15px; padding: 0px 0px 10px; border-bottom: 1px solid #f1f1f1;' class='ec-comment clearfix'>" +
+        "<div style='height:40px; width:40px; display: inline-block;' class='ec-comment__avatar'>" +
           "<img  src='" + this.author.avatar + "'>" +
         "</div>" +
-        "<div class='ec-comment__body'>" +
+        "<div style=' display: inline-block;' class='ec-comment__body'>" +
           "<h4 style='margin: 0; height: 20px; line-height: 20px; font-weight: bold; font-size: 12px'><em>" + this.author.name  +
             "</em><small>" + _renderDate(this.timestamp) + "</small>" +
-            "<span><i class='delete fa fa-trash-o fa-lg' aria-hidden='true' data-id='" + this.id + "' data-toggle='modal' data-target='#deleteComModal' " +  "></i>" +
+            "<span class='clearfix'><i class='delete fa fa-trash-o fa-lg' aria-hidden='true' data-id='" + this.id + "' data-toggle='modal' data-target='#deleteComModal' " +  "></i>" +
             "<i class='replay fa fa-commenting-o' aria-hidden='true' data-id='"+ this.id +"'></i>" +
             "</span>" +
           "</h4>" +

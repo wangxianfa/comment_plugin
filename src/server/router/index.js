@@ -85,6 +85,9 @@ exports.saveComment = (req, res) => {
         return;
       })
 
+    } else {
+      res.send({'code': 'E01', 'message': '传入字段有误或不完整！', 'content':''});
+      return;
     }
 
 }
