@@ -79,7 +79,7 @@ initDOM : function (index) {
   if (index !== -2) {
       var _html = ''
     for (var i = 0; i < emoji[index].length; i++) {
-      _html += '<li><span class="face_wrap"><img class="face ' + emoji[index][i].emojiName + '" src="' + emoji[index][i].emojiurl + '" alt="' + emoji[index][i].emojiName + '" title="' + emoji[index][i].emojiName + '" /></span></li>';   
+      _html += '<li><span style="box-sizing: border-box; padding-top: 5px;" class="face_wrap"><img class="face ' + emoji[index][i].emojiName + '" src="' + emoji[index][i].emojiurl + '" alt="' + emoji[index][i].emojiName + '" title="' + emoji[index][i].emojiName + '" /></span></li>';
     }
     this.DOM.emojiHtml = $("<ul style='list-style: none' id='emojiList' class='emojiList'>" + _html + "</ul>").get(0);
   }

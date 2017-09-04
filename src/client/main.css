@@ -83,12 +83,23 @@ ul, li{
 } */
 
 .ec-comment {
-  display: flex;
+  position: relative;
   border-bottom: 1px solid #f1f1f1;
+}
+
+.clearfix:after{
+  content: '';
+  clear: both;
+  display: block;
+}
+
+.clearfix{
+  zoom: 1;
 }
 
 .ec-comment__avatar {
   margin-right: 10px;
+  float: left;
 }
 
 .ec-comment__avatar img {
@@ -98,7 +109,8 @@ ul, li{
 }
 
 .ec-comment__body {
-  width: calc(100% - 50px)
+  width: calc(100% - 50px);
+  float: left;
 }
 
  .ec-comment__body h4 {
@@ -116,7 +128,7 @@ ul, li{
 }
 
 .ec-comment__body h4>span{
-  display: inline-flex;
+  display: inline-block;
   position: absolute;
   right: 0;
 }
@@ -129,6 +141,7 @@ ul, li{
   display: none;
   color: #a2a2a2;
   margin-left: 12px;
+  float: left;
 }
 .ec-comment:hover i{
   display: block;
@@ -218,9 +231,6 @@ ul, li{
 }
 
 .emojiList>li>span{
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
 }
 
@@ -296,11 +306,12 @@ ul, li{
 #bottom_target>span, #reply_bottom_target>span{
   width: 38px;
   height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  text-align: center;
   cursor: pointer;
   overflow: hidden;
+  padding-top: 6px;
+  box-sizing: border-box;
 }
 #reply_bottom_target>span{
   width: 35px;

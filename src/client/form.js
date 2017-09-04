@@ -33,12 +33,6 @@ var Form = {
     // 添加事件监听，提交按钮的提交点击， 文本框的focus事件触发
     this.addEventListeners(0);
 
-    //用户登录判断,禁止评论
-    // if (!window.triComment.username || window.triComment.username.length == 0) {
-    //   $(this.DOM.ECFormField).attr('contenteditable', 'false');
-    //   $(this.DOM.button).attr('disabled', 'true');
-    //   $(this.DOM.emojiFace).unbind();
-    // }
     // 设置form尺寸
     this.resize();
     this.err = [];
