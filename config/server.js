@@ -1,7 +1,7 @@
 module.exports = {
 
     serverType: 'http',
-    host: '127.0.0.1',
+    host: 'localhost',
     port: '3000'
 
 }

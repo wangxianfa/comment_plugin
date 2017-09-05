@@ -1,13 +1,11 @@
 
-@import url("static/font-awesome-4.7.0/css/font-awesome.min.css");
+@import url("static/fonts/iconfont.css");
 @import url("static/bootstrap/css/bootstrap.min.css");
 body {
   font-family: Helvetica, Tahoma, "Microsoft YaHei", "微软雅黑", Arial, STXihei, "华文细黑", SimSun, "宋体", Heiti, "黑体", sans-serif;
   margin: 0;
-  padding: 20px;
-  border: 1px solid #e0e0e0;
   border-radius: 5px;
-  /* box-shadow: 4px 6px #f1f1f1; */
+  background-color: #fbfbfb;
 }
 
 body.active {
@@ -54,7 +52,7 @@ ul, li{
   font-size: 14px;
   /*font-family: 'MicrosoftYaHei';*/
   width: 68px;
-  height: 30px;
+  height: 28px;
   border: 0;
   color: white;
   cursor: pointer;
@@ -63,10 +61,21 @@ ul, li{
   right: 0;
   background-color: #90c16f;
   border-bottom-right-radius: 5px;
+  cursor: pointer;
+}
+
+.button:disabled{
+  cursor: not-allowed;
+  background-color: #b7d7a1;
 }
 
 #reply .button{
   border-radius: 3px;
+}
+
+#reply .button:disabled{
+  cursor: not-allowed;
+  background-color: #b7d7a1;
 }
 
 .button:focus {
@@ -74,7 +83,8 @@ ul, li{
 }
 
 .ec-list {
-  padding-top: 30px;
+  padding: 20px 20px 0;
+  box-sizing: border-box;
   /* background-color: #0f0 */
 }
 /* #ECForm{
@@ -142,14 +152,22 @@ ul, li{
   color: #a2a2a2;
   margin-left: 12px;
   float: left;
+  font-size: 14px;
+  font-weight: normal;
 }
-.ec-comment:hover i{
+.ec-comment .replay{
   display: block;
-  color: #a2a2a2;;
+  font-size: 16px;
 }
+
+.ec-comment:hover .delete{
+  display: block;
+  color: #a2a2a2;
+}
+
 .ec-comment:hover i:hover{
   display: block;
-  color: #b92c2c;;
+  color: #90c16f;;
 }
 .ec-comment__body p {
   /* width: 100%; */
@@ -167,8 +185,7 @@ ul, li{
 }
 
 
-  .ec-comment__body .ec-content>img{
-  margin: 8px 1px -6px;
+.ec-comment__body .ec-content>img{
   width: 22px;
   height: 22px;
 }
@@ -179,7 +196,7 @@ ul, li{
 
 .ec-error {
   margin: 0;
-  color: #90c16f;
+  color: #a2a2a2;
   font-size: 12px;
   padding: 10px 0 0;
   /*font-family: 'MicrosoftYaHei';*/
@@ -200,13 +217,14 @@ ul, li{
   display: inline-block;
   margin: 0 10px;
   cursor: pointer;
-  background: url(./static/images/face.png) 0 0 no-repeat;
+  background: url(./static/images/face.png) 0 1px no-repeat;
   padding-left: 23px;
   /*font-family: 'MicosoftYaHei';*/
   font-size: 12px;
   color: #90c16f;
   text-align: left;
-  height: 18px;
+  height: 21px;
+  line-height: 21px;
 }
 #ec-replay-emoji-face{
   margin: 0;
@@ -372,9 +390,12 @@ small {
   top: 4px;
 }
 
+#emoji li{
+  font-size: 0;
+}
+
 #blank {
   /* padding-top: 50px; */
-  width: 200px;
   margin: 0 auto;
   display: none;
   margin-top: 50px;
@@ -422,19 +443,20 @@ i {
   color: #90c16f;
   cursor: pointer;
   margin-top: 15px;
+  background-color: #fff;
 
 }
 #replyTextarea{
   border: 1px solid #e0e0e0;
   width: 100%;
   /* height: 100%; */
-  font-size: 14px;
+  font-size: 12px;
   color: #2a2a2a;
   /* resize: vertical; */
   resize: none;
   padding: 5px 9px;
   box-sizing: border-box;
-  border-radius: 3px;
+  border-radius: 4px;
   overflow-x: hidden;
   line-height: 20px;
 }
@@ -456,19 +478,33 @@ i {
 #replyCont{
   font-family: 'Microsoft YaHei';
   color: #a2a2a2;
-  background-color: #f6f6f6;
-  font-size: 14px;
-  padding: 4px 10px 3px;
+  font-size: 12px;
+  padding: 0px 10px;
   line-height: 25px;
-  /* overflow : hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical; */
+  border-left: 2px solid #90c16f;
 }
 
 #replyCont>span{
   /* margin-bottom: -4px; */
   display: inline-block;
+  height: 20px !important;
+  line-height: 20px !important;
   /* height: 25px; */
+}
+
+#replyCont>span>img{
+  width: 18px !important;
+  height: 18px !important;
+  margin-top: -2px !important;
+}
+
+#triangle{
+  width: 0px;
+  height: 0px;
+  border-left: 5px solid #fff;
+  border-right: 5px solid #fff;
+  border-bottom: 10px solid #f6f6f6;
+  background-color: red;
+  top: -10px;
+  left: 12px;
 }

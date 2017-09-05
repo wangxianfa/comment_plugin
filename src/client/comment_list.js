@@ -21,6 +21,7 @@ var CommentList = {
       list = document.createElement('div'); // ECList
       list.setAttribute('id', 'EC-list');
       list.setAttribute('class', 'ec-list');
+      list.style.display = 'block';
     } else {
       list = iframe.contentWindow.document.getElementById('EC-list');
     }
@@ -50,12 +51,17 @@ var CommentList = {
     // 创建加在更多
     this.loadmore = document.createElement('div'); // ECList
     this.loadmore.setAttribute('id', 'loadMore');
-    this.loadmore.style.height = '24px';
     this.loadmore.style.lineHeight = '24px';
-    this.loadmore.style.margin = '15px auto 0';
-    this.loadmore.style.maxWidth = '92px';
+    this.loadmore.style.margin = '0 auto';
+    this.loadmore.style.paddingTop = '15px';
+    this.loadmore.style.textAlign = 'center';
+
+    this.morewrap = document.createElement('span');
+
     form.parentNode.appendChild(this.loadmore);
-    this.loadmore.innerHTML = '查看更多评论';
+    this.loadmore.appendChild(this.morewrap);
+    this.morewrap.innerHTML = '查看更多评论';
+
 
     this.renderCallback = renderCallback;
     this.path = EchoChamber.discussionURL;
@@ -72,7 +78,7 @@ var CommentList = {
   // 事件监听
   addEventListener: function () {
     var self = this;
-    $(this.loadmore).on('click', this.loadMore.bind(this));
+    $(this.morewrap).on('click', this.loadMore.bind(this));
     //添加删除评论事件
     var ECList = self.iframe.contentWindow.document.getElementById("EC-list");
 
@@ -105,7 +111,8 @@ var CommentList = {
           let replyto = item.parentNode.parentNode.firstChild.innerText;
           reply.init(replyto, self.triComment)
 
-          item.parentNode.parentNode.parentNode.appendChild($(reply.render()).get(0))
+          item.parentNode.parentNode.parentNode.appendChild($(reply.render()).get(0));
+          item.parentNode.parentNode.parentNode.lastChild.firstChild.firstChild.focus();
 
           self.doc.getElementById('ec-replay-emoji-face').addEventListener('click', self.emojiClick.bind(self))
           self.doc.getElementById('replySubmit').addEventListener('click', self.replySubmit.bind(self, $(item).attr('data-id')));
@@ -147,6 +154,10 @@ var CommentList = {
         self.loadmore.style.display = 'block';
       }
 
+      if (self.list.style.display === 'none') {
+        self.list.style.display = 'block';
+      }
+
       if (res.data.content.length > 0 && load) {
         self.comments = self.comments.concat(self.load(res.data.content));
       } else if (!load) {
@@ -155,14 +166,14 @@ var CommentList = {
 
       if (res.data.content.length < 10) {
         self.haveMore = false;
-        self.loadmore.innerHTML = '没有更多评论';
-        self.loadmore.style.color = '#a2a2a2';
-        self.loadmore.style.cursor = 'default';
+        self.morewrap.innerHTML = '没有更多评论';
+        self.morewrap.style.color = '#a2a2a2';
+        self.morewrap.style.cursor = 'default';
       } else {
         self.haveMore = true;
-        self.loadmore.innerHTML = '查看更多评论';
-        self.loadmore.style.color = '#90c16f';
-        self.loadmore.style.cursor = 'pointer';
+        self.morewrap.innerHTML = '查看更多评论';
+        self.morewrap.style.color = '#90c16f';
+        self.morewrap.style.cursor = 'pointer';
       }
 
       self.render();
@@ -215,7 +226,7 @@ var CommentList = {
       }
     }
 
-    this.resizeForm();
+    self.resizeForm();
   },
   //获取数据后,重置form大小
   resizeForm: function () {
@@ -229,14 +240,16 @@ var CommentList = {
 
     for (var index = 0; index < eccomment.length; index++) {
 
-      num += (parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1)
-      // console.log((parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1))
-      // console.log('margin: ' + parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')))
-      // console.log('height: ' + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
+      num += (parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
+      console.log((parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1))
+      console.log('margin: ' + parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')))
+      console.log('height: ' + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
     }
 
-    num += 30;
-    // console.log('comment_list中的ECList的height: ' + num);
+    if (this.list.style.display === 'block') {
+      num += 20;
+    }
+    console.log('comment_list中的ECList的height: ' + num);
 
     // var height = 0;
     // console.log($(this.form.nextSibling.nextSibling))
@@ -253,7 +266,7 @@ var CommentList = {
 
     }
 
-    if (this.form.nextSibling.style.display === 'block' && $(this.form.nextSibling).attr('id') === 'blank') {
+    if ($(this.form.nextSibling).attr('id') === 'blank' && this.form.nextSibling.style.display === 'block') {
 
       num += ($(this.form.nextSibling).height() + parseInt($(this.form.nextSibling).css('margin-top')))
 
@@ -263,19 +276,19 @@ var CommentList = {
     }
 
     if ($(this.loadmore).css('display') === 'block') {
-
-      num += ($(this.loadmore).height() + parseInt($(this.loadmore).css('margin-top')))
+      // console.log($(this.loadmore).get(0).offsetHeight + parseInt($(this.loadmore).css('margin-top')))
+      num += ($(this.loadmore).get(0).offsetHeight + parseInt($(this.loadmore).css('margin-top')))
 
     }
 
     // console.log('加载更多高度：' + ($(this.loadmore).height() + parseInt($(this.loadmore).css('margin-top'))))
 
     // 加上上面的输入框高度和body的padding值和margin值
-    num += formHeight + margin + 42;
+    num += formHeight + margin + 20;
     this.iframe.style.height = num + 10 + 'px';
     // this.overlay.style.height = num + 10 + 'px';
 
-    console.log('iframe高度：' + this.iframe.style.height)
+    // console.log('iframe高度：' + this.iframe.style.height)
 
   },
   load: function (data) {
@@ -299,6 +312,7 @@ var CommentList = {
       // console.log(this.form)
       // console.log(this.form.nextSibling);
       this.form.nextSibling.style.display = 'none';
+      this.doc.body.style.backgroundColor = '#fff';
     }
     this.list.innerHTML = this.buildHTML();
     var i = $(self.iframe.contentWindow.document.getElementById("EC-list")).find('i');
@@ -340,6 +354,12 @@ var CommentList = {
   },
   buildHTML: function () {
     var self = this;
+
+    if (this.comments.length === 0) {
+      this.iframe.contentWindow.document.getElementById('EC-list').style.display = 'none';
+      this.form.style. boxShadow = '0 0 6px 1px #dedede';
+    }
+
     var comments = self.comments.slice();
     //  console.log(comments)
     return comments.reduce(function (total, comment) {
@@ -379,6 +399,7 @@ var CommentList = {
       let msg = commonFunc.showErrors(this, comment.errors);
       var Reply = this.doc.getElementById('reply');
       if (msg) {
+        msg.style.padding = '4px 0';
         Reply.appendChild(msg);
       }
     }
@@ -390,6 +411,8 @@ var CommentList = {
 
     var element = this.DOM.replyTextarea;
     commonFunc.emojiIconClick(this, element, e)
+
+    this.changeButtonStatus();
 
   },
 
@@ -424,15 +447,21 @@ var CommentList = {
         field: 'text',
         message: '网络错误,评论失败~'
       }];
-      // self.showErrors(error);
+
+      let msg = commonFunc.showErrors(self, error);
+      var Reply = self.doc.getElementById('reply');
+      if (msg) {
+        msg.style.padding = '4px 0';
+        Reply.appendChild(msg);
+      }
+
+      self.resizeForm();
       return false;
     })
   },
 
   autoResizeHeight: function () {
-    // console.log(this.DOM.replyTextarea.style.height)
-    // console.log(this.DOM.replyTextarea.style.lineHeight)
-    // console.log($(this.DOM.replyTextarea).width())
+    this.changeButtonStatus();
     // this.DOM.replyTextarea.style.height = 'auto';
     // if ((this.DOM.replyTextarea.scrollHeight + 2) !== parseInt(this.DOM.replyTextarea.style.height)) {
     this.DOM.replyTextarea.style.height = (this.DOM.replyTextarea.scrollHeight + 2) + 'px';
@@ -444,7 +473,19 @@ var CommentList = {
     if ($(this.DOM.replyTextarea.parentNode.parentNode.lastChild).attr('class') === 'ec-error') {
       $(this.DOM.replyTextarea.parentNode.parentNode.lastChild).remove();
       this.err = [];
+      this.resizeForm();
     }
+  },
+
+  changeButtonStatus: function () {
+    var len = commonFunc.getCommentLength(this.DOM.replyTextarea.value.trim());
+
+    if (len !== 0) {
+      this.doc.getElementById('replySubmit').removeAttribute('disabled');
+    } else {
+      this.doc.getElementById('replySubmit').setAttribute('disabled', 'disabled');
+    }
+
   }
 
 }

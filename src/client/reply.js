@@ -7,7 +7,7 @@ var Replay = {
   render: function () {
     let _replayTemplate =
     "<div id='reply'>" +
-      "<div id='textareaWrap'><textarea style='height: 32px; line-height: 20px;' id='replyTextarea' placeholder='回复 "+ this.replay +" : '></textarea><span draggable='true' id='dragBugle'></span></div>" +
+      "<div id='textareaWrap'><textarea style='height: 32px; line-height: 20px; font-size: 12px;' id='replyTextarea' placeholder='回复 "+ this.replay +" : '></textarea><span draggable='true' id='dragBugle'></span></div>" +
       "<div id='ECFormButtonField'>" +
         "<div id='emoji' class='emoji'>" +
           "<ul class='ec-emojiList'>" +
@@ -19,7 +19,7 @@ var Replay = {
             "</div>" +
           "</div>" +
         "</div>" +
-        "<input class='button' id='replySubmit' type='submit' value='评论'>" +
+        "<input class='button' id='replySubmit' disabled='disabled' type='submit' value='评论'>" +
       "</div>" +
     "</div>"
 
