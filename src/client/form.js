@@ -91,22 +91,22 @@ var Form = {
     let hasCss = false;
 
     var head = window.top.document.getElementsByTagName('head')[0];
-    var link = window.top.document.querySelectorAll('link');
+    // var link = window.top.document.querySelectorAll('link');
 
-    // 判断是否存在bootstrap css
-    for (var link_i = 0; link_i < link.length; link_i++){
-      if ((link[link_i].href).indexOf('bootstrap.min.css') !== -1) {
-        hasCss = true;
-      }
-    }
+    // // 判断是否存在bootstrap css
+    // for (var link_i = 0; link_i < link.length; link_i++){
+    //   if ((link[link_i].href).indexOf('bootstrap.min.css') !== -1) {
+    //     hasCss = true;
+    //   }
+    // }
 
-    if (!hasCss) {
-      var linkTag = document.createElement('link');
-      linkTag.href = this.triComment.domain + '/static/bootstrap/css/bootstrap.min.css';
-      linkTag.setAttribute('rel','stylesheet');
-      linkTag.setAttribute('type','text/css');
-      head.appendChild(linkTag);
-    }
+    // if (!hasCss) {
+    //   var linkTag = document.createElement('link');
+    //   linkTag.href = this.triComment.domain + '/static/bootstrap/css/bootstrap.min.css';
+    //   linkTag.setAttribute('rel','stylesheet');
+    //   linkTag.setAttribute('type','text/css');
+    //   head.appendChild(linkTag);
+    // }
 
     if (!window.top.document.getElementById('deleteComModal')) {
         var _div = document.createElement('div');

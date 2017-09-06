@@ -100,7 +100,7 @@ var CommentList = {
       if (item.tagName === 'I' && item.getAttribute('class').indexOf('replay') !== -1) {
 
         // 移除其他
-        if (self.iframe.contentWindow.document.getElementById('reply')) {
+        if (self.iframe.contentWindow.document.getElementById('reply') && $(item.parentNode.parentNode.parentNode.lastChild).attr('id') !== 'reply') {
          $(self.iframe.contentWindow.document.getElementById('reply')).remove();
          self.emoji = '';
         }
@@ -123,6 +123,9 @@ var CommentList = {
 
           // 给文本框增加自动resize事件
           $(self.DOM.replyTextarea).on('input', self.autoResizeHeight.bind(self))
+        } else {
+          $(self.iframe.contentWindow.document.getElementById('reply')).remove();
+          self.resizeForm();
         }
 
         self.resizeForm()
@@ -241,15 +244,15 @@ var CommentList = {
     for (var index = 0; index < eccomment.length; index++) {
 
       num += (parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
-      console.log((parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1))
-      console.log('margin: ' + parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')))
-      console.log('height: ' + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
+      // console.log((parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')) + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight + 1))
+      // console.log('margin: ' + parseInt($(this.list).find('.ec-comment').eq(index).css('margin-bottom')))
+      // console.log('height: ' + $(this.list).find('.ec-comment').eq(index).get(0).offsetHeight)
     }
 
     if (this.list.style.display === 'block') {
       num += 20;
     }
-    console.log('comment_list中的ECList的height: ' + num);
+    // console.log('comment_list中的ECList的height: ' + num);
 
     // var height = 0;
     // console.log($(this.form.nextSibling.nextSibling))

@@ -9,7 +9,6 @@
 		z-index: 1;
 		/* 解决包裹层和iframe之间有六百的问题 */
 		font-size: 0;
-		box-shadow: 0 0 5px 0px #dedede;
 }
 
 /* .demo-iframe-holder .overlay {

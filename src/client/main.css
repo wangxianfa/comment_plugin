@@ -167,7 +167,10 @@ ul, li{
 
 .ec-comment:hover i:hover{
   display: block;
-  color: #90c16f;;
+  color: #90c16f;
+}
+.ec-comment:hover .delete:hover{
+  color: #b92c2c;
 }
 .ec-comment__body p {
   /* width: 100%; */
@@ -177,7 +180,7 @@ ul, li{
 .ec-comment__body .ec-content {
   margin: 0;
   font-size: 14px;
-  line-height: 25px;
+  line-height: 24px;
   /* padding-bottom: 8px; */
   color: #2a2a2a;
   text-align: left;
@@ -480,25 +483,10 @@ i {
   color: #a2a2a2;
   font-size: 12px;
   padding: 0px 10px;
-  line-height: 25px;
-  border-left: 2px solid #90c16f;
 }
 
-#replyCont>span{
-  /* margin-bottom: -4px; */
-  display: inline-block;
-  height: 20px !important;
-  line-height: 20px !important;
-  /* height: 25px; */
-}
-
-#replyCont>span>img{
-  width: 18px !important;
-  height: 18px !important;
-  margin-top: -2px !important;
-}
-
-#triangle{
+/*回复引用上面指向正三角形  */
+/* #triangle{
   width: 0px;
   height: 0px;
   border-left: 5px solid #fff;
@@ -507,4 +495,13 @@ i {
   background-color: red;
   top: -10px;
   left: 12px;
+} */
+
+/*回复引用左边小绿条  */
+#leftBar{
+  height: calc(100% - 8px);
+  top: 4px;
+  left: 0;
+  width: 2px;
+  background-color: #90c16f;
 }

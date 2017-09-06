@@ -37,7 +37,7 @@ var Comment = {
   },
 
 
-  transformEmoji: function(str) {
+  transformEmoji: function(str, spanHeight='22px', lineHeight='22px', imgHeight='22px', imgMargin='0px 1px') {
 
       if (!str) {
         str = '';
@@ -59,7 +59,7 @@ var Comment = {
           for (var i = 0; i < e.DOM.emoji.length; i++ ) {
             for (var x = 0; x < e.DOM.emoji[i].length; x++) {
               if (temp === e.DOM.emoji[i][x].emojiName) {
-                var rep = '<span style="display: inline-block; height: 25px; box-sizing: border-box; line-height: 25px;"><img style="width: 22px; height: 22px; margin: 0px 1px;" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
+                var rep = '<span style="vertical-align: middle; display: inline-block; height: '+ spanHeight +'; box-sizing: border-box; line-height: '+ lineHeight +';"><img style="vertical-align: text-top; width: '+ imgHeight +'; height: '+ imgHeight +'; margin: '+ imgMargin +';" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
                 // console.log('rep: ' + rep);
                 str = str.replace(condition[j],rep);
                 // console.log('replace:' + elecontent);
@@ -103,8 +103,8 @@ var Comment = {
             "<i class='replay ygkiwi-icon ygkiwi-icon-discuss' data-id='"+ this.id +"'></i>" +
             "</span>" +
           "</h4>" +
-          "<div style='display: "+ reply_display +"; line-height: 24px; padding: 0px 10px; position: relative; margin: 10px 0px 4px;' id='replyCont'>回复 <span style='font-weight: bold; display: inline-block;'>"+ this.reply.username + "</span>: " + this.transformEmoji(this.reply.content) +"</div>" +
-          "<div style='margin: 0; line-height: 25px; padding: 6px 0' class='ec-content'>" + this.transformEmoji(this.text) + "</div>" +
+          "<div style='display: "+ reply_display +"; line-height: 21px; padding: 0px 10px; position: relative; margin: 6px 0px 0px;' id='replyCont'><span style='position: absolute;' id='leftBar'></span>回复 <span style='font-weight: bold; display: inline-block;'>"+ this.reply.username + "</span>: " + this.transformEmoji(this.reply.content, '18px', '18px', '18px') +"</div>" +
+          "<div style='margin: 0; line-height: 24px; padding: 5px 0 6px' class='ec-content'>" + this.transformEmoji(this.text) + "</div>" +
         "</div>" +
         "<div style='clear: both;'></div>" +
       "</div>"
