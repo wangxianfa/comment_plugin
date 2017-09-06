@@ -31,7 +31,7 @@ exports.getComments = (req, res) => {
       } else {
 
         const _result = result[i];
-        if (result[i]._cite !== '') {
+        if (result[i]._cite && result[i]._cite !== '') {
 
           // 查找回复对象数据
           commentModel.findById(result[i]._cite, (err, replydata) => {
@@ -46,7 +46,7 @@ exports.getComments = (req, res) => {
 
         } else {
 
-          resultData.push(Object.assign({}, JSON.parse(JSON.stringify(_result)), {'reply': {}}))
+          resultData.push(Object.assign({}, JSON.parse(JSON.stringify(_result)), {'_cite': ''}, {'reply': {}}))
           iterator(i+1)
         }
       }

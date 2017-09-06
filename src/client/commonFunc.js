@@ -19,8 +19,11 @@ exports.getCommentLength = (str) => {
 exports.showErrors = (_this, errors) => {
   _this.err.push(errors[0]);
   if (_this.err.length === 1) {
-    console.log(_this.doc)
+    // console.log(_this.doc)
     var msg = _this.doc.createElement('div');
+    msg.style.padding = '4px 20px';
+    msg.style.color = '#a2a2a2';
+    msg.style.backgroundColor = '#fff';
     var err = '<p>' + errors[0].message + '</p>';
     msg.innerHTML = err;
     msg.classList.add('ec-error');

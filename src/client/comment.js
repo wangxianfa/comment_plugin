@@ -37,7 +37,7 @@ var Comment = {
   },
 
 
-  transformEmoji: function(str) {
+  transformEmoji: function(str, spanHeight='22px', lineHeight='22px', imgHeight='22px', imgMargin='0px 1px') {
 
       if (!str) {
         str = '';
@@ -59,7 +59,7 @@ var Comment = {
           for (var i = 0; i < e.DOM.emoji.length; i++ ) {
             for (var x = 0; x < e.DOM.emoji[i].length; x++) {
               if (temp === e.DOM.emoji[i][x].emojiName) {
-                var rep = '<span style="display: inline-block; height: 25px; box-sizing: border-box;"><img style="width: 22px; height: 22px; margin: 0px 1px;" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
+                var rep = '<span style="vertical-align: middle; display: inline-block; height: '+ spanHeight +'; box-sizing: border-box; line-height: '+ lineHeight +';"><img style="vertical-align: text-top; width: '+ imgHeight +'; height: '+ imgHeight +'; margin: '+ imgMargin +';" src="' + e.DOM.emoji[i][x].emojiurl + '"/></span>';
                 // console.log('rep: ' + rep);
                 str = str.replace(condition[j],rep);
                 // console.log('replace:' + elecontent);
@@ -92,20 +92,21 @@ var Comment = {
     return (
       // border、margin、padding等都必须写内联样式，不然会增加高度的不确定性
       // 不使用flex布局是为了提高兼容性
-      "<div style='margin-bottom: 15px; padding: 0px 0px 10px; border-bottom: 1px solid #f1f1f1;' class='ec-comment clearfix'>" +
-        "<div style='height:40px; width:40px; display: inline-block;' class='ec-comment__avatar'>" +
+      "<div style='margin-bottom: 15px; padding: 0px 0px 10px; border-bottom: 1px solid #f1f1f1;' class='ec-comment'>" +
+        "<div style='height:40px; width:40px; display: inline-block; position: absolute; left: 0; top: 0;' class='ec-comment__avatar'>" +
           "<img  src='" + this.author.avatar + "'>" +
         "</div>" +
-        "<div style=' display: inline-block;' class='ec-comment__body'>" +
+        "<div style=' display: inline-block; position: relative; margin-left: 50px; ' class='ec-comment__body'>" +
           "<h4 style='margin: 0; height: 20px; line-height: 20px; font-weight: bold; font-size: 12px'><em>" + this.author.name  +
             "</em><small>" + _renderDate(this.timestamp) + "</small>" +
-            "<span class='clearfix'><i class='delete fa fa-trash-o fa-lg' aria-hidden='true' data-id='" + this.id + "' data-toggle='modal' data-target='#deleteComModal' " +  "></i>" +
-            "<i class='replay fa fa-commenting-o' aria-hidden='true' data-id='"+ this.id +"'></i>" +
+            "<span class='clearfix'><i class='delete ygkiwi-icon ygkiwi-icon-trash' data-id='" + this.id + "' data-toggle='modal' data-target='#deleteComModal' " +  "></i>" +
+            "<i class='replay ygkiwi-icon ygkiwi-icon-discuss' data-id='"+ this.id +"'></i>" +
             "</span>" +
           "</h4>" +
-          "<div style='margin: 0; line-height: 25px; padding: 6px 0' class='ec-content'>" + this.transformEmoji(this.text) + "</div>" +
-          "<div style='display: "+ reply_display +"; margin-bottom: 10px; line-height: 25px; padding: 4px 10px 3px;' id='replyCont'><span style='font-weight: bold; display: inline-block;'>"+ this.reply.username + "</span>: " + this.transformEmoji(this.reply.content) +"</div>" +
+          "<div style='display: "+ reply_display +"; line-height: 21px; padding: 0px 10px; position: relative; margin: 6px 0px 0px;' id='replyCont'><span style='position: absolute;' id='leftBar'></span>回复 <span style='font-weight: bold; display: inline-block;'>"+ this.reply.username + "</span>: " + this.transformEmoji(this.reply.content, '18px', '18px', '18px') +"</div>" +
+          "<div style='margin: 0; line-height: 24px; padding: 5px 0 6px' class='ec-content'>" + this.transformEmoji(this.text) + "</div>" +
         "</div>" +
+        "<div style='clear: both;'></div>" +
       "</div>"
     );
   }

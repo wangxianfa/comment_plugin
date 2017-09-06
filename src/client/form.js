@@ -7,6 +7,26 @@ const commonFunc = require('./commonFunc.js')
 
 const config = require('../../config/server.js');
 
+var hasBootstrap = false;
+var topScripts = window.top.document.querySelectorAll('script');
+
+for (var topScripts_i = 0; topScripts_i < topScripts.length; topScripts_i++) {
+  if (topScripts[topScripts_i].src &&
+    (topScripts[topScripts_i].src.indexOf('bootstrap.js') !== -1 ||
+    topScripts[topScripts_i].src.indexOf('bootstrap.min.js') !== -1)) {
+    hasBootstrap = true;
+  }
+}
+if (!hasBootstrap) {
+  var bootstrap = require('bootstrap');
+}
+
+if (!window.top.jQuery) {
+  var jquery = require('jquery');
+
+} else {
+  window.$ = window.jQuery = window.top.jQuery;
+}
 
 
 var Form = {
@@ -67,46 +87,26 @@ var Form = {
       this.doc.write(this.renderFormTemplate());
     }
 
-    var topScripts = window.top.document.querySelectorAll('script');
     // 判断是否有相关库文件，没有的话自动引入
     let hasCss = false;
-    var hasBootstrap = false;
-
-    for (var topScripts_i = 0; topScripts_i < topScripts.length; topScripts_i++) {
-      if (topScripts[topScripts_i].src &&
-        (topScripts[topScripts_i].src.indexOf('bootstrap.js') !== -1 ||
-        topScripts[topScripts_i].src.indexOf('bootstrap.min.js') !== -1)) {
-        hasBootstrap = true;
-      }
-    }
-    if (!hasBootstrap) {
-      var bootstrap = require('bootstrap');
-    }
-
-    if (!window.top.jQuery) {
-      var jquery = require('jquery');
-
-    } else {
-      window.$ = window.jQuery = window.top.jQuery;
-    }
 
     var head = window.top.document.getElementsByTagName('head')[0];
-    var link = window.top.document.querySelectorAll('link');
+    // var link = window.top.document.querySelectorAll('link');
 
-    // 判断是否存在bootstrap css
-    for (var link_i = 0; link_i < link.length; link_i++){
-      if ((link[link_i].href).indexOf('bootstrap.min.css') !== -1) {
-        hasCss = true;
-      }
-    }
+    // // 判断是否存在bootstrap css
+    // for (var link_i = 0; link_i < link.length; link_i++){
+    //   if ((link[link_i].href).indexOf('bootstrap.min.css') !== -1) {
+    //     hasCss = true;
+    //   }
+    // }
 
-    if (!hasCss) {
-      var linkTag = document.createElement('link');
-      linkTag.href = this.triComment.domain + '/static/bootstrap/css/bootstrap.min.css';
-      linkTag.setAttribute('rel','stylesheet');
-      linkTag.setAttribute('type','text/css');
-      head.appendChild(linkTag);
-    }
+    // if (!hasCss) {
+    //   var linkTag = document.createElement('link');
+    //   linkTag.href = this.triComment.domain + '/static/bootstrap/css/bootstrap.min.css';
+    //   linkTag.setAttribute('rel','stylesheet');
+    //   linkTag.setAttribute('type','text/css');
+    //   head.appendChild(linkTag);
+    // }
 
     if (!window.top.document.getElementById('deleteComModal')) {
         var _div = document.createElement('div');
@@ -147,6 +147,8 @@ var Form = {
       var msg = commonFunc.showErrors(this, comment.errors);
       var Blank = this.doc.getElementById('blank');
       if (msg) {
+        this.DOM.form.style.paddingBottom = '0';
+        this.DOM.form.style.height = ($(this.DOM.form).get(0).offsetHeight - 20) + 'px';
         Blank.parentNode.insertBefore(msg, Blank);
       }
     }
@@ -170,6 +172,8 @@ var Form = {
       var msg = commonFunc.showErrors(self, error);
       var Blank = self.doc.getElementById('blank');
       if (msg) {
+        self.DOM.form.style.paddingBottom = '0';
+        self.DOM.form.style.height = ($(self.DOM.form).get(0).offsetHeight - 20) + 'px';
         Blank.parentNode.insertBefore(msg, Blank);
       }
       self.resize();
@@ -208,6 +212,8 @@ var Form = {
       //这里需要清空err数组的内容
       this.err = [];
       warn.remove();
+      this.DOM.form.style.paddingBottom = '20px';
+      this.DOM.form.style.height = ($(this.DOM.form).get(0).offsetHeight + 20) + 'px';
     }
 
     this.resize();
@@ -229,6 +235,13 @@ var Form = {
 
   textLeft: function () {
     var len = this.getCommentLength(this.DOM.ECFormField.value.trim());
+
+    if (len > 0) {
+      this.DOM.button.removeAttribute('disabled');
+    } else {
+      this.DOM.button.setAttribute('disabled', 'disabled');
+    }
+
     var left = 140 - len;
     this.DOM.WordLeft.innerText = left;
   },
@@ -262,7 +275,7 @@ var Form = {
 
   renderFormTemplate: function () {
     var _formTemplate =
-    "<div style='height: 154px' id='ECForm' class='ec-form-wrapper'>" +
+    "<div style='height: 194px; padding: 20px; box-sizing: border-box;' id='ECForm' class='ec-form-wrapper'>" +
       "<form class='ec-form'>" +
         "<div class='ec-form__field' id='ECForm-text'>" +
           "<textarea style='height: 98px;' contenteditable='true' class='' name='text' id='ECFormField' placeholder='我有话说...'>" +
@@ -281,12 +294,12 @@ var Form = {
                 "</div>" +
               "</div>" +
             "</div>" +
-            "<input class='button' id='ECFormSubmit' type='submit' value='评论'>" +
+            "<input class='button' disabled='disabled' id='ECFormSubmit' type='submit' value='评论'>" +
           "</div>" +
         "</div>" +
       "</form>" +
     "</div>" +
-    "<div id='blank' style='margin-top: 50px'><img style='height: 98px' src=" + this.triComment.domain + "/static/images/blank.png><p style='height: 24px; line-height: 24px; margin-top: 20px'>暂时还没有评论..</p></div>";
+    "<div id='blank' style='margin: 0;'><img style='height: 98px; margin-top: 50px;' src=" + this.triComment.domain + "/static/images/blank.png><p style='height: 24px; line-height: 24px; margin-top: 20px'>暂时还没有评论..</p></div>";
 
     return _formTemplate;
   }
